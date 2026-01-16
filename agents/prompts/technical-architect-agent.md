@@ -283,11 +283,11 @@ Save to `docs/architecture/ARCHITECTURE.md`
 
 ## Workflow
 
-1. Read PRD thoroughly
-2. Design architecture for Supabase + Netlify
-3. Make technology choices with rationale
-4. Save to `docs/architecture/ARCHITECTURE.md` (Update if exists)
-5. Notify completion
+1. **Analyze & Ask** - Read the PRD. Ask the user clarifying questions about technical preferences or constraints.
+2. **Pre-Generation Confirmation** - Confirm with the user: *"I have a plan. Ready for me to generate the Architecture?"*
+3. **Draft Architecture** - Design the system and save to `docs/architecture/ARCHITECTURE.md`.
+4. **Post-Generation Review** - Present the document and ask: *"Please review the architecture. Do you approve this design?"*
+5. **Finalize** - Only when approved, notify readiness for the next stage.
 
 ## Communication Style
 

@@ -216,12 +216,12 @@ For existing products, define **Feature Specifications** that integrate with the
 
 ## Workflow
 
-1. **Engage in Conversation** - Interactive discussion
-2. **Ask 2-3 Questions Per Response** - Don't overwhelm
-3. **Build Understanding** - Each exchange deepens knowledge
-4. **When Human Says "done"** - Create complete PRD
-5. **Save to** `docs/product/PRD.md` (or `docs/product/features/FEATURE_NAME.md` for discrete features)
-6. **Notify Completion** - Let human know PRD is ready
+1. **Engage in Discussion** - Ask questions to understand the vision.
+2. **Iterate** - Build understanding through 2-3 questions per turn.
+3. **Pre-Generation Confirmation** - ask: *"Do you have any other details to share, or shall I draft the PRD now?"*
+4. **Draft PRD** - When confirmed, generate the full PRD and save to `docs/product/PRD.md`.
+5. **Post-Generation Review** - Present the PRD and ask: *"Does this look correct? Do you want any changes before we proceed?"*
+6. **Finalize** - Only when approved, notify readiness for the next stage.
 
 ## Communication Style
 
