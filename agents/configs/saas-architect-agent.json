@@ -1,0 +1,161 @@
+{
+    "id": "saas-architect-agent",
+    "name": "SaaS Technical Architect",
+    "role": "Designs comprehensive system architecture optimized for SaaS products using Supabase and Netlify",
+    "version": "1.0.0",
+    "systemPrompt": {
+        "file": "agents/prompts/technical-architect-agent.md",
+        "variables": {
+            "backend_platform": "Supabase",
+            "frontend_platform": "Netlify",
+            "project_type": "saas",
+            "specialization_context": "${file:agents/specializations/saas/architect-context.md}"
+        }
+    },
+    "model": {
+        "provider": "anthropic",
+        "name": "claude-sonnet-4-20250514",
+        "temperature": 0.5,
+        "maxTokens": 8000
+    },
+    "tools": [
+        "filesystem",
+        "github",
+        "web_search"
+    ],
+    "toolConfigs": {
+        "github": {
+            "token": "${GITHUB_TOKEN}",
+            "defaultRepo": "${GITHUB_REPO}"
+        }
+    },
+    "memory": {
+        "enabled": true,
+        "type": "persistent",
+        "scope": "project",
+        "maxItems": 100,
+        "rememberAcrossSessions": true
+    },
+    "collaboration": {
+        "canReceiveFrom": [
+            "saas-pm-agent"
+        ],
+        "canSendTo": [
+            "saas-dba-agent",
+            "designer-agent",
+            "infrastructure-agent"
+        ],
+        "handoffPoints": [
+            "architecture_complete"
+        ],
+        "notifyOn": {
+            "architecture_complete": [
+                "saas-dba-agent",
+                "designer-agent",
+                "infrastructure-agent"
+            ]
+        }
+    },
+    "inputs": {
+        "required": [
+            "docs/product/PRD.md"
+        ],
+        "optional": [
+            "Technical constraints",
+            "Performance requirements",
+            "Scalability targets"
+        ]
+    },
+    "outputs": {
+        "primary": "docs/architecture/ARCHITECTURE.md",
+        "artifacts": [
+            "docs/architecture/API_DESIGN.md",
+            "docs/architecture/SECURITY.md",
+            "docs/architecture/DATA_FLOW.md",
+            "docs/architecture/TECH_STACK.md"
+        ]
+    },
+    "triggers": {
+        "manual": true,
+        "automated": [
+            "prd_complete",
+            "architecture_review_requested"
+        ]
+    },
+    "behavior": {
+        "interactive": false,
+        "iterative": true,
+        "requiresApproval": true,
+        "autonomous": true,
+        "reviewsBeforeSubmitting": true
+    },
+    "validation": {
+        "outputFormat": "markdown",
+        "requiredSections": [
+            "System Overview",
+            "Architecture Diagram",
+            "Component Design",
+            "Data Architecture",
+            "API Design",
+            "Security Architecture",
+            "Deployment Architecture",
+            "Scalability Plan"
+        ],
+        "architecturalPrinciples": [
+            "Multi-tenancy first",
+            "Tenant isolation",
+            "SOLID",
+            "DRY",
+            "Security by design",
+            "Scalability first"
+        ]
+    },
+    "constraints": {
+        "backend": {
+            "platform": "Supabase",
+            "database": "PostgreSQL",
+            "features": [
+                "auth",
+                "storage",
+                "realtime",
+                "edge-functions"
+            ]
+        },
+        "frontend": {
+            "platform": "Netlify",
+            "features": [
+                "static-hosting",
+                "serverless-functions",
+                "edge-functions"
+            ]
+        },
+        "mustUse": [
+            "Row Level Security",
+            "TypeScript",
+            "Multi-tenancy"
+        ],
+        "shouldAvoid": [
+            "Cross-tenant data leakage",
+            "Global state"
+        ]
+    },
+    "errorHandling": {
+        "retryAttempts": 2,
+        "retryDelay": "1m",
+        "fallbackBehavior": "request_clarification",
+        "logErrors": true
+    },
+    "metadata": {
+        "created": "2025-01-14",
+        "author": "AI Dev Team System",
+        "description": "Technical Architect specialized for SaaS products, ensuring multi-tenant isolation, subscription management, and scalable architecture",
+        "tags": [
+            "architecture",
+            "system-design",
+            "supabase",
+            "netlify",
+            "saas",
+            "multi-tenancy"
+        ]
+    }
+}

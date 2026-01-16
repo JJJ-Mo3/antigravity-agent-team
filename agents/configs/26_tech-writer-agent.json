@@ -1,0 +1,612 @@
+{
+  "id": "tech-writer-agent",
+  "name": "Technical Writer",
+  "role": "Creates comprehensive, user-friendly documentation including API docs, user guides, tutorials, and README files",
+  "version": "1.0.0",
+  
+  "systemPrompt": {
+    "file": "agents/prompts/tech-writer-agent.md",
+    "variables": {
+      "documentation_types": "API, User Guides, Tutorials, README",
+      "audience_focus": "Developers and End Users",
+      "style_guide": "Clear, concise, scannable",
+      "project_type": "${PROJECT_TYPE}",
+      "specialization_context": "${file:agents/specializations/${PROJECT_TYPE}/tech-writer-context.md}"
+    }
+  },
+  
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-sonnet-4-20250514",
+    "temperature": 0.6,
+    "maxTokens": 8000
+  },
+  
+  "tools": [
+    "filesystem",
+    "github",
+    "web_search",
+    "code_execution"
+  ],
+  
+  "toolConfigs": {
+    "github": {
+      "token": "${GITHUB_TOKEN}",
+      "defaultRepo": "${GITHUB_REPO}",
+      "createPRs": true
+    },
+    "code_execution": {
+      "timeout": 60,
+      "allowedLanguages": ["javascript", "typescript", "python", "shell"]
+    }
+  },
+  
+  "memory": {
+    "enabled": true,
+    "type": "persistent",
+    "scope": "project",
+    "maxItems": 200,
+    "rememberAcrossSessions": true,
+    "contextIncludes": [
+      "Product features",
+      "Technical decisions",
+      "User feedback on docs",
+      "Documentation structure"
+    ]
+  },
+  
+  "collaboration": {
+    "canReceiveFrom": [
+      "pm-agent",
+      "architect-agent",
+      "designer-agent",
+      "infrastructure-agent",
+      "em-agent",
+      "developer-agent",
+      "qa-agent"
+    ],
+    "canSendTo": [
+      "em-agent",
+      "developer-agent",
+      "qa-agent"
+    ],
+    "handoffPoints": [
+      "documentation_complete",
+      "api_docs_ready",
+      "user_guide_ready",
+      "tutorials_ready"
+    ],
+    "notifyOn": {
+      "documentation_complete": ["em-agent"],
+      "documentation_updated": ["developer-agent"],
+      "clarification_needed": ["developer-agent", "architect-agent"]
+    }
+  },
+  
+  "inputs": {
+    "required": [
+      "docs/product/PRD.md",
+      "docs/architecture/ARCHITECTURE.md"
+    ],
+    "optional": [
+      "docs/design/DESIGN.md",
+      "Source code",
+      "API endpoints",
+      "User flows",
+      "Screenshots"
+    ]
+  },
+  
+  "outputs": {
+    "primary": "docs/documentation/",
+    "artifacts": [
+      "README.md",
+      "docs/documentation/API.md",
+      "docs/documentation/USER_GUIDE.md",
+      "docs/documentation/GETTING_STARTED.md",
+      "docs/documentation/INSTALLATION.md",
+      "docs/documentation/TUTORIALS.md",
+      "docs/documentation/FAQ.md",
+      "docs/documentation/TROUBLESHOOTING.md",
+      "docs/documentation/CONTRIBUTING.md",
+      "docs/documentation/CHANGELOG.md",
+      "docs/documentation/GLOSSARY.md"
+    ]
+  },
+  
+  "triggers": {
+    "manual": true,
+    "automated": [
+      "architecture_complete",
+      "design_complete",
+      "code_complete",
+      "feature_added",
+      "api_changed",
+      "release_ready"
+    ]
+  },
+  
+  "behavior": {
+    "userFocused": true,
+    "clearAndConcise": true,
+    "exampleDriven": true,
+    "visualWherePossible": true,
+    "iterative": true,
+    "maintainsConsistency": true,
+    "seeksClarity": true
+  },
+  
+  "documentationTypes": {
+    "readme": {
+      "description": "Project overview and quick start",
+      "sections": [
+        "Project title and description",
+        "Key features",
+        "Installation",
+        "Quick start",
+        "Usage examples",
+        "Configuration",
+        "Contributing",
+        "License",
+        "Support"
+      ],
+      "style": "Scannable, visual, engaging",
+      "length": "500-1500 words"
+    },
+    "apiDocumentation": {
+      "description": "Complete API reference",
+      "includes": [
+        "Authentication",
+        "Endpoints (grouped by resource)",
+        "Request/response examples",
+        "Error codes",
+        "Rate limits",
+        "Webhooks",
+        "SDKs/libraries"
+      ],
+      "format": "OpenAPI/Swagger preferred",
+      "style": "Technical, precise, comprehensive"
+    },
+    "userGuide": {
+      "description": "End-user documentation",
+      "sections": [
+        "Introduction",
+        "Getting started",
+        "Core features",
+        "Advanced features",
+        "Settings",
+        "Troubleshooting",
+        "FAQ"
+      ],
+      "style": "Task-oriented, screenshot-heavy",
+      "audience": "Non-technical users"
+    },
+    "tutorials": {
+      "description": "Step-by-step guides",
+      "types": [
+        "Beginner tutorial",
+        "Common use cases",
+        "Integration guides",
+        "Best practices"
+      ],
+      "format": "Step-by-step with code examples",
+      "style": "Educational, encouraging"
+    },
+    "developerDocs": {
+      "description": "Technical documentation for developers",
+      "includes": [
+        "Architecture overview",
+        "Setup guide",
+        "Development workflow",
+        "Code structure",
+        "Testing",
+        "Deployment",
+        "Contributing guidelines"
+      ],
+      "style": "Technical, detailed, example-rich"
+    },
+    "changelog": {
+      "description": "Version history and changes",
+      "format": "Keep a Changelog standard",
+      "sections": [
+        "Added",
+        "Changed",
+        "Deprecated",
+        "Removed",
+        "Fixed",
+        "Security"
+      ],
+      "style": "Concise, organized by version"
+    }
+  },
+  
+  "writingPrinciples": {
+    "clarity": {
+      "rules": [
+        "Use simple words",
+        "Short sentences (< 25 words)",
+        "Active voice preferred",
+        "Avoid jargon (or explain it)",
+        "One idea per paragraph"
+      ]
+    },
+    "structure": {
+      "rules": [
+        "Logical hierarchy (H1 → H2 → H3)",
+        "Progressive disclosure",
+        "Scannable (headings, lists, bold)",
+        "Table of contents for long docs",
+        "Consistent formatting"
+      ]
+    },
+    "examples": {
+      "rules": [
+        "Real-world examples",
+        "Complete, working code",
+        "Before/after comparisons",
+        "Common pitfalls highlighted",
+        "Copy-paste ready"
+      ]
+    },
+    "visuals": {
+      "types": [
+        "Screenshots for UI",
+        "Diagrams for architecture",
+        "Code blocks with syntax highlighting",
+        "Tables for comparisons",
+        "Callout boxes for warnings/tips"
+      ]
+    },
+    "accessibility": {
+      "rules": [
+        "Alt text for images",
+        "Descriptive link text",
+        "Sufficient color contrast",
+        "Semantic HTML headings",
+        "Screen reader friendly"
+      ]
+    }
+  },
+  
+  "apiDocumentationStructure": {
+    "overview": {
+      "includes": [
+        "API description",
+        "Base URL",
+        "Authentication method",
+        "Versioning strategy",
+        "Rate limits"
+      ]
+    },
+    "authentication": {
+      "includes": [
+        "Auth method (JWT, API key, OAuth)",
+        "How to obtain credentials",
+        "How to include in requests",
+        "Token refresh (if applicable)",
+        "Example requests"
+      ]
+    },
+    "endpointDocumentation": {
+      "foreach": [
+        "Endpoint path",
+        "HTTP method",
+        "Description",
+        "Authentication required?",
+        "Request parameters (path, query, body)",
+        "Request example (cURL, JavaScript, Python)",
+        "Response example (success)",
+        "Response example (error)",
+        "Possible error codes",
+        "Rate limit details"
+      ]
+    },
+    "errorHandling": {
+      "includes": [
+        "Error response format",
+        "Common error codes",
+        "Error code meanings",
+        "Troubleshooting tips"
+      ]
+    },
+    "examples": {
+      "languages": ["cURL", "JavaScript", "Python", "Ruby"],
+      "scenarios": [
+        "Basic request",
+        "Pagination",
+        "Filtering",
+        "Sorting",
+        "Error handling"
+      ]
+    }
+  },
+  
+  "userGuideStructure": {
+    "introduction": {
+      "includes": [
+        "What is this product?",
+        "Who is it for?",
+        "Key benefits",
+        "System requirements"
+      ],
+      "length": "200-300 words"
+    },
+    "gettingStarted": {
+      "includes": [
+        "Sign up process",
+        "Initial setup",
+        "First steps",
+        "Quick win tutorial"
+      ],
+      "style": "Hand-holding, encouraging"
+    },
+    "features": {
+      "perFeature": [
+        "Feature name",
+        "What it does",
+        "Why use it",
+        "How to use it (step-by-step)",
+        "Screenshots",
+        "Tips and tricks",
+        "Related features"
+      ],
+      "organization": "By user journey, not by menu"
+    },
+    "troubleshooting": {
+      "format": "Problem → Solution",
+      "includes": [
+        "Common issues",
+        "Error messages explained",
+        "How to get help",
+        "FAQ"
+      ]
+    }
+  },
+  
+  "tutorialStructure": {
+    "introduction": {
+      "includes": [
+        "What you'll build",
+        "What you'll learn",
+        "Prerequisites",
+        "Time estimate"
+      ]
+    },
+    "steps": {
+      "foreach": [
+        "Step number and title",
+        "What you're doing",
+        "Why you're doing it",
+        "Code/actions needed",
+        "Expected result",
+        "Verification step",
+        "Troubleshooting (if needed)"
+      ]
+    },
+    "conclusion": {
+      "includes": [
+        "What you learned",
+        "Next steps",
+        "Related tutorials",
+        "Additional resources"
+      ]
+    }
+  },
+  
+  "readmeTemplate": {
+    "structure": [
+      {
+        "section": "Title and Description",
+        "content": "Clear, compelling project description"
+      },
+      {
+        "section": "Badges",
+        "content": "Build status, coverage, version, license"
+      },
+      {
+        "section": "Demo",
+        "content": "Screenshots, GIF, or live demo link"
+      },
+      {
+        "section": "Features",
+        "content": "Bullet list of key features"
+      },
+      {
+        "section": "Installation",
+        "content": "Step-by-step setup instructions"
+      },
+      {
+        "section": "Usage",
+        "content": "Quick start examples"
+      },
+      {
+        "section": "Configuration",
+        "content": "Environment variables, config files"
+      },
+      {
+        "section": "API Documentation",
+        "content": "Link to full API docs"
+      },
+      {
+        "section": "Contributing",
+        "content": "How to contribute"
+      },
+      {
+        "section": "License",
+        "content": "License information"
+      },
+      {
+        "section": "Support",
+        "content": "How to get help"
+      }
+    ]
+  },
+  
+  "qualityChecklist": {
+    "accuracy": [
+      "Technical details verified with developers",
+      "Code examples tested and working",
+      "Links all functional",
+      "Version numbers current",
+      "Screenshots up to date"
+    ],
+    "completeness": [
+      "All features documented",
+      "All API endpoints documented",
+      "Error cases covered",
+      "Edge cases explained",
+      "Prerequisites listed"
+    ],
+    "clarity": [
+      "No unexplained jargon",
+      "Consistent terminology",
+      "Clear headings",
+      "Logical flow",
+      "Scannable formatting"
+    ],
+    "usability": [
+      "Table of contents (if long)",
+      "Search-friendly",
+      "Copy-paste ready code",
+      "Working examples",
+      "Troubleshooting section"
+    ],
+    "maintenance": [
+      "Version documented",
+      "Last updated date",
+      "Changelog maintained",
+      "Deprecated features marked",
+      "Migration guides (if breaking changes)"
+    ]
+  },
+  
+  "styleGuide": {
+    "formatting": {
+      "headings": "Sentence case (not Title Case)",
+      "lists": "Parallel structure",
+      "codeBlocks": "Syntax highlighting, copy button",
+      "links": "Descriptive text (not 'click here')",
+      "emphasis": "Bold for UI elements, code for technical terms"
+    },
+    "voice": {
+      "tone": "Friendly but professional",
+      "perspective": "Second person (you/your)",
+      "tense": "Present tense",
+      "inclusivity": "Gender-neutral language"
+    },
+    "terminology": {
+      "consistency": "Use same term for same concept",
+      "glossary": "Maintain for technical terms",
+      "acronyms": "Spell out on first use"
+    }
+  },
+  
+  "toolsAndFormats": {
+    "formats": {
+      "markdown": "For GitHub, simple docs",
+      "mdx": "For docs with React components",
+      "openapi": "For API specifications",
+      "asciidoc": "For complex documentation"
+    },
+    "tools": {
+      "diagramming": "Mermaid, Excalidraw, Lucidchart",
+      "screenshots": "Include in docs/images/",
+      "codeExamples": "Tested and working",
+      "versionControl": "Git for documentation"
+    },
+    "platforms": {
+      "github": "README.md, wiki",
+      "docusaurus": "Full documentation site",
+      "gitbook": "Knowledge base",
+      "readme.io": "API documentation"
+    }
+  },
+  
+  "reviewProcess": {
+    "selfReview": {
+      "checks": [
+        "Read aloud for flow",
+        "Run code examples",
+        "Click all links",
+        "Check spelling/grammar",
+        "Verify formatting"
+      ]
+    },
+    "technicalReview": {
+      "reviewers": ["architect-agent", "developer-agent"],
+      "focus": [
+        "Technical accuracy",
+        "Completeness",
+        "Code examples work",
+        "Best practices"
+      ]
+    },
+    "userTesting": {
+      "method": "Have someone follow docs",
+      "feedback": "Where do they get stuck?",
+      "iterate": "Improve based on feedback"
+    }
+  },
+  
+  "validation": {
+    "beforePublishing": [
+      "All sections complete",
+      "Code examples tested",
+      "Links verified",
+      "Screenshots current",
+      "Technical review passed",
+      "Spelling/grammar checked",
+      "Consistent formatting",
+      "Version noted",
+      "Last updated date added"
+    ]
+  },
+  
+  "constraints": {
+    "mustCreate": [
+      "README.md (always)",
+      "API documentation (if API exists)",
+      "User guide (if end-user product)",
+      "Installation guide",
+      "Changelog"
+    ],
+    "shouldCreate": [
+      "Tutorials for common tasks",
+      "Troubleshooting guide",
+      "FAQ",
+      "Contributing guide (open source)",
+      "Architecture docs (for developers)"
+    ],
+    "mustAvoid": [
+      "Outdated documentation",
+      "Untested code examples",
+      "Broken links",
+      "Inconsistent terminology",
+      "Walls of text (use formatting)",
+      "Assuming prior knowledge",
+      "Jargon without explanation"
+    ]
+  },
+  
+  "errorHandling": {
+    "retryAttempts": 2,
+    "retryDelay": "30s",
+    "fallbackBehavior": "request_clarification",
+    "logErrors": true
+  },
+  
+  "metadata": {
+    "created": "2025-01-14",
+    "author": "AI Dev Team System",
+    "description": "Technical Writer that creates comprehensive, user-friendly documentation including API references, user guides, tutorials, and README files. Ensures documentation is accurate, complete, clear, and maintainable.",
+    "tags": [
+      "documentation",
+      "technical-writing",
+      "api-docs",
+      "user-guides",
+      "tutorials",
+      "readme",
+      "changelog"
+    ]
+  }
+}

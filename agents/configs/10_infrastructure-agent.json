@@ -1,0 +1,211 @@
+{
+  "id": "infrastructure-agent",
+  "name": "Infrastructure Engineer",
+  "role": "Sets up and configures Supabase projects, Netlify sites, and manages deployment infrastructure",
+  "version": "1.0.0",
+  
+  "systemPrompt": {
+    "file": "agents/prompts/infrastructure-agent.md",
+    "variables": {
+      "backend_platform": "Supabase",
+      "frontend_platform": "Netlify",
+      "project_type": "${PROJECT_TYPE}",
+      "specialization_context": "${file:agents/specializations/${PROJECT_TYPE}/infrastructure-context.md}"
+    }
+  },
+  
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-sonnet-4-20250514",
+    "temperature": 0.3,
+    "maxTokens": 8000
+  },
+  
+  "tools": [
+    "filesystem",
+    "github",
+    "supabase",
+    "netlify"
+  ],
+  
+  "toolConfigs": {
+    "github": {
+      "token": "${GITHUB_TOKEN}",
+      "defaultRepo": "${GITHUB_REPO}"
+    },
+    "supabase": {
+      "url": "${SUPABASE_URL}",
+      "serviceKey": "${SUPABASE_SERVICE_KEY}"
+    },
+    "netlify": {
+      "token": "${NETLIFY_AUTH_TOKEN}",
+      "siteId": "${NETLIFY_SITE_ID}"
+    }
+  },
+  
+  "memory": {
+    "enabled": true,
+    "type": "persistent",
+    "scope": "project",
+    "maxItems": 100,
+    "rememberAcrossSessions": true
+  },
+  
+  "collaboration": {
+    "canReceiveFrom": ["architect-agent", "dba-agent", "designer-agent"],
+    "canSendTo": ["em-agent", "devops-agent", "developer-agent"],
+    "handoffPoints": ["infrastructure_ready", "environments_configured"],
+    "notifyOn": {
+      "infrastructure_ready": ["em-agent"],
+      "environment_updated": ["developer-agent", "devops-agent"]
+    }
+  },
+  
+  "inputs": {
+    "required": [
+      "docs/architecture/ARCHITECTURE.md",
+      "docs/database/SCHEMA.md"
+    ],
+    "optional": [
+      "Environment requirements",
+      "Scaling requirements",
+      "Security requirements"
+    ]
+  },
+  
+  "outputs": {
+    "primary": "docs/infrastructure/SETUP.md",
+    "artifacts": [
+      "docs/infrastructure/ENV_VARS.md",
+      "docs/infrastructure/DEPLOYMENT.md",
+      "docs/infrastructure/ENVIRONMENTS.md",
+      "docs/infrastructure/MONITORING.md",
+      "docs/infrastructure/BACKUP.md"
+    ]
+  },
+  
+  "triggers": {
+    "manual": true,
+    "automated": [
+      "design_complete",
+      "infrastructure_review_requested",
+      "environment_change_needed"
+    ]
+  },
+  
+  "behavior": {
+    "interactive": false,
+    "iterative": true,
+    "requiresApproval": true,
+    "autonomous": true,
+    "createsStepByStepGuides": true,
+    "validatesConfiguration": true
+  },
+  
+  "validation": {
+    "outputFormat": "markdown",
+    "requiredSections": [
+      "Setup Overview",
+      "Supabase Configuration",
+      "Netlify Configuration",
+      "Environment Variables",
+      "Database Migration",
+      "Authentication Setup",
+      "Storage Setup",
+      "Monitoring Setup"
+    ],
+    "includesManualSteps": true,
+    "providesTroubleshooting": true
+  },
+  
+  "infrastructureSetup": {
+    "environments": ["development", "staging", "production"],
+    "supabase": {
+      "required": [
+        "Project creation",
+        "Database setup",
+        "Auth configuration",
+        "Storage buckets",
+        "Edge functions",
+        "RLS policies"
+      ]
+    },
+    "netlify": {
+      "required": [
+        "Site creation",
+        "Build configuration",
+        "Environment variables",
+        "Functions setup",
+        "Domain configuration"
+      ]
+    },
+    "monitoring": {
+      "recommended": ["Sentry", "LogRocket", "Uptime monitoring"]
+    }
+  },
+  
+  "environmentManagement": {
+    "development": {
+      "supabase": "taskflow-dev",
+      "netlify": "localhost",
+      "purpose": "Local development"
+    },
+    "staging": {
+      "supabase": "taskflow-staging",
+      "netlify": "app-staging.netlify.app",
+      "purpose": "Testing and QA"
+    },
+    "production": {
+      "supabase": "taskflow-prod",
+      "netlify": "app.netlify.app",
+      "purpose": "Live application"
+    }
+  },
+  
+  "securityConfiguration": {
+    "mustImplement": [
+      "Environment variable security",
+      "API key rotation plan",
+      "HTTPS enforcement",
+      "CORS configuration",
+      "Rate limiting",
+      "Secret management"
+    ]
+  },
+  
+  "constraints": {
+    "platforms": {
+      "backend": "Supabase only",
+      "frontend": "Netlify only"
+    },
+    "mustSetUp": [
+      "Development environment",
+      "Staging environment",
+      "Production environment",
+      "Database migrations",
+      "Auth configuration",
+      "Storage buckets"
+    ],
+    "shouldAvoid": [
+      "Hardcoded secrets",
+      "Missing environment separation",
+      "Unmonitored services",
+      "No backup strategy"
+    ]
+  },
+  
+  "errorHandling": {
+    "retryAttempts": 3,
+    "retryDelay": "1m",
+    "fallbackBehavior": "provide_manual_steps",
+    "logErrors": true,
+    "includesTroubleshooting": true
+  },
+  
+  "metadata": {
+    "created": "2025-01-14",
+    "author": "AI Dev Team System",
+    "description": "Infrastructure Engineer specialized in Supabase and Netlify setup, environment configuration, and deployment infrastructure management",
+    "tags": ["infrastructure", "supabase", "netlify", "deployment", "devops", "configuration"]
+  }
+}

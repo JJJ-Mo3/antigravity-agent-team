@@ -1,0 +1,304 @@
+{
+  "id": "developer-agent",
+  "name": "Software Developer",
+  "role": "Implements code according to slice specifications following plan-execute-verify workflow",
+  "version": "1.0.0",
+  
+  "systemPrompt": {
+    "file": "agents/prompts/developer-agent.md",
+    "variables": {
+      "workflow": "plan-execute-verify",
+      "testing_required": "true",
+      "project_type": "${PROJECT_TYPE}",
+      "specialization_context": "${file:agents/specializations/${PROJECT_TYPE}/developer-context.md}"
+    }
+  },
+  
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-sonnet-4-20250514",
+    "temperature": 0.4,
+    "maxTokens": 8000
+  },
+  
+  "tools": [
+    "filesystem",
+    "github",
+    "code_execution",
+    "supabase"
+  ],
+  
+  "toolConfigs": {
+    "github": {
+      "token": "${GITHUB_TOKEN}",
+      "defaultRepo": "${GITHUB_REPO}",
+      "createPRs": true,
+      "createBranches": true
+    },
+    "supabase": {
+      "url": "${SUPABASE_URL}",
+      "serviceKey": "${SUPABASE_SERVICE_KEY}"
+    },
+    "code_execution": {
+      "timeout": 60,
+      "allowedLanguages": ["javascript", "typescript", "python", "shell"]
+    }
+  },
+  
+  "memory": {
+    "enabled": true,
+    "type": "persistent",
+    "scope": "agent",
+    "maxItems": 150,
+    "rememberAcrossSessions": true,
+    "contextIncludes": [
+      "Current slice",
+      "Recent decisions",
+      "Code patterns used",
+      "Dependencies installed"
+    ]
+  },
+  
+  "collaboration": {
+    "canReceiveFrom": ["em-agent", "qa-agent"],
+    "canSendTo": ["em-agent", "qa-agent"],
+    "handoffPoints": [
+      "plan_proposed",
+      "plan_approved",
+      "code_complete",
+      "pr_created",
+      "changes_requested"
+    ],
+    "notifyOn": {
+      "plan_ready": ["em-agent"],
+      "pr_ready": ["em-agent", "qa-agent"],
+      "blocked": ["em-agent"],
+      "help_needed": ["em-agent"]
+    }
+  },
+  
+  "inputs": {
+    "required": [
+      "GitHub Issue (slice specification)"
+    ],
+    "optional": [
+      "docs/architecture/ARCHITECTURE.md",
+      "docs/database/SCHEMA.md",
+      "docs/design/DESIGN.md",
+      "Related code files"
+    ]
+  },
+  
+  "outputs": {
+    "primary": "Pull Request",
+    "artifacts": [
+      "Code files",
+      "Tests",
+      "Documentation updates",
+      "Execution plan (initially)"
+    ]
+  },
+  
+  "triggers": {
+    "manual": true,
+    "automated": [
+      "slice_assigned",
+      "changes_requested",
+      "plan_feedback_received"
+    ]
+  },
+  
+  "behavior": {
+    "autonomous": true,
+    "followsWorkflow": "plan-execute-verify",
+    "selfVerifies": true,
+    "requiresReview": true,
+    "iterative": true,
+    "learnsFromFeedback": true
+  },
+  
+  "developmentWorkflow": {
+    "phase1_plan": {
+      "description": "Create execution plan before coding",
+      "duration": "5-10 minutes",
+      "outputs": "Detailed plan with approach and file changes",
+      "requiresApproval": true,
+      "approver": "em-agent"
+    },
+    "phase2_execute": {
+      "description": "Implement according to approved plan",
+      "includes": [
+        "Write production code",
+        "Write tests",
+        "Update documentation",
+        "Handle edge cases"
+      ],
+      "followsStandards": true,
+      "writesTDD": "Preferred"
+    },
+    "phase3_verify": {
+      "description": "Self-verify before submitting",
+      "checks": [
+        "Tests pass",
+        "Types check",
+        "Linting passes",
+        "Meets acceptance criteria",
+        "Edge cases handled",
+        "Error states handled",
+        "Loading states added"
+      ],
+      "mustPass": "All checks"
+    },
+    "phase4_submit": {
+      "description": "Create PR and request review",
+      "includes": [
+        "Descriptive PR title",
+        "Complete description",
+        "Links to issue",
+        "Screenshots if UI",
+        "Testing instructions"
+      ]
+    }
+  },
+  
+  "codingStandards": {
+    "language": "TypeScript (strict mode)",
+    "style": "Airbnb + Prettier",
+    "linting": "ESLint",
+    "formatting": "Prettier",
+    "principles": [
+      "SOLID",
+      "DRY",
+      "KISS",
+      "YAGNI",
+      "Clean Code"
+    ],
+    "patterns": {
+      "prefer": ["Composition", "Hooks", "Functional"],
+      "avoid": ["Global state", "Prop drilling", "God objects"]
+    }
+  },
+  
+  "testingRequirements": {
+    "framework": "Jest + React Testing Library",
+    "coverage": {
+      "minimum": "80%",
+      "target": "90%"
+    },
+    "types": [
+      "Unit tests (required)",
+      "Integration tests (for complex flows)",
+      "E2E tests (for critical paths)"
+    ],
+    "mustTest": [
+      "Happy path",
+      "Error cases",
+      "Edge cases",
+      "Loading states",
+      "Authentication",
+      "Permissions"
+    ]
+  },
+  
+  "componentStructure": {
+    "organization": "Feature-based folders",
+    "naming": "PascalCase for components",
+    "fileStructure": {
+      "component": "ComponentName.tsx",
+      "tests": "ComponentName.test.tsx",
+      "styles": "Built into component (Tailwind)",
+      "types": "ComponentName.types.ts (if complex)"
+    },
+    "mustInclude": [
+      "TypeScript types",
+      "PropTypes or interface",
+      "Error boundaries where needed",
+      "Loading states",
+      "Error states"
+    ]
+  },
+  
+  "databaseInteraction": {
+    "library": "Supabase client",
+    "queries": "Use Supabase query builder",
+    "mutations": "Handle optimistic updates",
+    "realtime": "Subscribe where needed",
+    "errorHandling": "Always catch and handle",
+    "security": "Respect RLS policies"
+  },
+  
+  "performanceConsiderations": {
+    "mustOptimize": [
+      "Component re-renders",
+      "Database queries",
+      "Bundle size",
+      "Image loading",
+      "API calls"
+    ],
+    "techniques": [
+      "React.memo for expensive components",
+      "useMemo for expensive calculations",
+      "useCallback for function props",
+      "Code splitting where appropriate",
+      "Lazy loading"
+    ]
+  },
+  
+  "errorHandling": {
+    "approach": "Defensive programming",
+    "mustHandle": [
+      "Network errors",
+      "Auth errors",
+      "Validation errors",
+      "Permission errors",
+      "Rate limiting"
+    ],
+    "userExperience": {
+      "showFriendlyMessages": true,
+      "provideActionableSteps": true,
+      "logErrorsToSentry": true,
+      "neverShowStackTraces": true
+    },
+    "retryAttempts": 2,
+    "retryDelay": "1m",
+    "fallbackBehavior": "ask_em_for_help",
+    "logErrors": true
+  },
+  
+  "validation": {
+    "beforeSubmittingPR": [
+      "All tests pass",
+      "No TypeScript errors",
+      "No ESLint errors",
+      "Prettier formatting applied",
+      "Acceptance criteria met",
+      "Edge cases handled",
+      "Documentation updated"
+    ]
+  },
+  
+  "constraints": {
+    "mustUse": [
+      "TypeScript",
+      "Functional components",
+      "Hooks",
+      "Tailwind CSS",
+      "Supabase client"
+    ],
+    "shouldAvoid": [
+      "Class components",
+      "Any type",
+      "Custom CSS without reason",
+      "Inline styles",
+      "Global state unless necessary",
+      "Direct DOM manipulation"
+    ]
+  },
+  
+  "metadata": {
+    "created": "2025-01-14",
+    "author": "AI Dev Team System",
+    "description": "Autonomous software developer that implements features following plan-execute-verify workflow with emphasis on testing, type safety, and code quality",
+    "tags": ["development", "coding", "typescript", "react", "testing", "implementation"]
+  }
+}

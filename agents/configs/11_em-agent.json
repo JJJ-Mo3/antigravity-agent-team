@@ -1,0 +1,251 @@
+{
+  "id": "em-agent",
+  "name": "Engineering Manager",
+  "role": "Creates detailed implementation plans, breaks work into small slices, and coordinates development team",
+  "version": "1.0.0",
+  
+  "systemPrompt": {
+    "file": "agents/prompts/em-agent.md",
+    "variables": {
+      "slice_size": "2-4 hours",
+      "total_slices": "15-40",
+      "project_type": "${PROJECT_TYPE}",
+      "specialization_context": "${file:agents/specializations/${PROJECT_TYPE}/em-context.md}"
+    }
+  },
+  
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-sonnet-4-20250514",
+    "temperature": 0.5,
+    "maxTokens": 8000
+  },
+  
+  "tools": [
+    "filesystem",
+    "github"
+  ],
+  
+  "toolConfigs": {
+    "github": {
+      "token": "${GITHUB_TOKEN}",
+      "defaultRepo": "${GITHUB_REPO}",
+      "createIssues": true,
+      "labelIssues": true,
+      "assignIssues": false
+    }
+  },
+  
+  "memory": {
+    "enabled": true,
+    "type": "persistent",
+    "scope": "project",
+    "maxItems": 200,
+    "rememberAcrossSessions": true,
+    "trackProgress": true
+  },
+  
+  "collaboration": {
+    "canReceiveFrom": ["designer-agent", "infrastructure-agent", "developer-agent", "qa-agent"],
+    "canSendTo": ["developer-agent", "qa-agent", "devops-agent"],
+    "handoffPoints": [
+      "plan_complete",
+      "slice_ready",
+      "review_complete",
+      "milestone_reached"
+    ],
+    "notifyOn": {
+      "plan_complete": ["developer-agent"],
+      "slice_assigned": ["developer-agent"],
+      "review_needed": ["developer-agent"],
+      "blocked": ["user"]
+    }
+  },
+  
+  "inputs": {
+    "required": [
+      "docs/product/PRD.md",
+      "docs/architecture/ARCHITECTURE.md",
+      "docs/database/SCHEMA.md",
+      "docs/design/DESIGN.md",
+      "docs/infrastructure/SETUP.md"
+    ],
+    "optional": [
+      "Team capacity",
+      "Timeline constraints",
+      "Priority overrides"
+    ]
+  },
+  
+  "outputs": {
+    "primary": "docs/implementation/PLAN.md",
+    "artifacts": [
+      "docs/implementation/SLICES.md",
+      "docs/implementation/DEPENDENCIES.md",
+      "docs/implementation/MILESTONES.md",
+      "GitHub Issues (one per slice)"
+    ]
+  },
+  
+  "triggers": {
+    "manual": true,
+    "automated": [
+      "infrastructure_ready",
+      "plan_review_requested",
+      "feature_added",
+      "requirements_changed"
+    ]
+  },
+  
+  "behavior": {
+    "interactive": false,
+    "iterative": true,
+    "requiresApproval": true,
+    "autonomous": true,
+    "tracksDependencies": true,
+    "monitorsProgress": true,
+    "unblocksTeam": true
+  },
+  
+  "validation": {
+    "outputFormat": "markdown + GitHub Issues",
+    "requiredSections": [
+      "Implementation Overview",
+      "Work Breakdown",
+      "Dependencies",
+      "Milestones",
+      "Timeline",
+      "Risk Assessment"
+    ],
+    "sliceValidation": {
+      "maxSize": "4 hours",
+      "minSize": "1 hour",
+      "mustHave": [
+        "Clear objective",
+        "Acceptance criteria",
+        "Dependencies list",
+        "Test requirements"
+      ]
+    }
+  },
+  
+  "planningPrinciples": {
+    "sliceSize": {
+      "target": "2-4 hours",
+      "maximum": "8 hours",
+      "reason": "Enable daily progress and quick feedback"
+    },
+    "dependencies": {
+      "track": "Always",
+      "visualize": "In documentation",
+      "blockingHandling": "Identify alternative work"
+    },
+    "prioritization": {
+      "method": "P0 (must-have) → P1 (should-have) → P2 (nice-to-have)",
+      "foundation": "Database + Auth first",
+      "features": "Core features before polish"
+    },
+    "testing": {
+      "requirement": "Every slice must be testable",
+      "coverage": "Unit tests required",
+      "e2e": "For critical paths"
+    }
+  },
+  
+  "sliceStructure": {
+    "format": "GitHub Issue",
+    "template": {
+      "title": "Concise, action-oriented",
+      "description": "What needs to be built",
+      "acceptanceCriteria": "Specific, measurable outcomes",
+      "technicalNotes": "Implementation guidance",
+      "dependencies": "Blocked by which other slices",
+      "testingRequirements": "What must be tested",
+      "estimatedTime": "1-4 hours"
+    },
+    "labels": ["priority", "type", "component"],
+    "assignee": "To be assigned by EM or developer"
+  },
+  
+  "milestones": {
+    "foundation": {
+      "includes": ["Project setup", "Auth", "Database", "Routing"],
+      "percentage": "15%"
+    },
+    "core_features": {
+      "includes": ["Main functionality", "Core workflows"],
+      "percentage": "60%"
+    },
+    "polish": {
+      "includes": ["Error handling", "Loading states", "Optimization"],
+      "percentage": "15%"
+    },
+    "launch_prep": {
+      "includes": ["Testing", "Documentation", "Deployment"],
+      "percentage": "10%"
+    }
+  },
+  
+  "progressTracking": {
+    "metrics": [
+      "Slices completed",
+      "Slices in progress",
+      "Slices blocked",
+      "Velocity (slices per week)",
+      "Bug rate",
+      "Time to completion"
+    ],
+    "reporting": "Weekly summaries",
+    "adjustments": "Re-prioritize based on velocity"
+  },
+  
+  "reviewProcess": {
+    "developmentPlan": {
+      "reviewer": "EM",
+      "criteria": ["Feasibility", "Approach", "Dependencies"],
+      "turnaround": "Within 1 hour"
+    },
+    "codeReview": {
+      "reviewer": "EM + Peer",
+      "criteria": ["Meets spec", "Code quality", "Tests"],
+      "turnaround": "Within 4 hours"
+    },
+    "blocking": {
+      "escalation": "To user if blocked > 4 hours",
+      "resolution": "Find alternative work or help"
+    }
+  },
+  
+  "constraints": {
+    "sliceSizing": {
+      "minimum": "1 hour",
+      "target": "2-4 hours",
+      "maximum": "8 hours"
+    },
+    "mustBreakDown": [
+      "Any task > 8 hours",
+      "Tasks with unclear requirements",
+      "Tasks with multiple concerns"
+    ],
+    "shouldAvoid": [
+      "Huge slices",
+      "Unclear acceptance criteria",
+      "Missing dependencies",
+      "Untestable slices"
+    ]
+  },
+  
+  "errorHandling": {
+    "retryAttempts": 2,
+    "retryDelay": "1m",
+    "fallbackBehavior": "request_clarification",
+    "logErrors": true
+  },
+  
+  "metadata": {
+    "created": "2025-01-14",
+    "author": "AI Dev Team System",
+    "description": "Engineering Manager that breaks down projects into small, manageable slices, tracks dependencies, coordinates development, and unblocks the team",
+    "tags": ["engineering-management", "planning", "coordination", "project-management", "agile"]
+  }
+}

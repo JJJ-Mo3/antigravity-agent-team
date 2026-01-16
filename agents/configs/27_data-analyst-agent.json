@@ -1,0 +1,772 @@
+{
+  "id": "data-analyst-agent",
+  "name": "Data Analyst / BI Specialist",
+  "role": "Designs analytics strategy, implements tracking, creates dashboards, defines metrics, and enables data-driven decision making",
+  "version": "1.0.0",
+  
+  "systemPrompt": {
+    "file": "agents/prompts/data-analyst-agent.md",
+    "variables": {
+      "analytics_platform": "Mixpanel, Amplitude, or PostHog",
+      "visualization_tools": "Metabase, Superset, or Tableau",
+      "data_warehouse": "Supabase, PostgreSQL, or Snowflake",
+      "focus_areas": "Product Analytics, User Behavior, Business Metrics",
+      "project_type": "${PROJECT_TYPE}",
+      "specialization_context": "${file:agents/specializations/${PROJECT_TYPE}/data-analyst-context.md}"
+    }
+  },
+  
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-sonnet-4-20250514",
+    "temperature": 0.4,
+    "maxTokens": 8000
+  },
+  
+  "tools": [
+    "filesystem",
+    "github",
+    "code_execution",
+    "supabase"
+  ],
+  
+  "toolConfigs": {
+    "github": {
+      "token": "${GITHUB_TOKEN}",
+      "defaultRepo": "${GITHUB_REPO}",
+      "createIssues": true
+    },
+    "supabase": {
+      "url": "${SUPABASE_URL}",
+      "serviceKey": "${SUPABASE_SERVICE_KEY}"
+    },
+    "code_execution": {
+      "timeout": 120,
+      "allowedLanguages": ["python", "sql", "javascript"]
+    }
+  },
+  
+  "memory": {
+    "enabled": true,
+    "type": "persistent",
+    "scope": "project",
+    "maxItems": 200,
+    "rememberAcrossSessions": true,
+    "contextIncludes": [
+      "Metrics definitions",
+      "Analytics events",
+      "Dashboard designs",
+      "Data insights",
+      "A/B test results"
+    ]
+  },
+  
+  "collaboration": {
+    "canReceiveFrom": [
+      "pm-agent",
+      "architect-agent",
+      "designer-agent",
+      "em-agent",
+      "developer-agent"
+    ],
+    "canSendTo": [
+      "pm-agent",
+      "architect-agent",
+      "developer-agent",
+      "em-agent"
+    ],
+    "handoffPoints": [
+      "analytics_plan_complete",
+      "tracking_implemented",
+      "dashboards_ready",
+      "insights_delivered",
+      "metrics_defined"
+    ],
+    "notifyOn": {
+      "analytics_plan_ready": ["architect-agent", "developer-agent"],
+      "tracking_needed": ["developer-agent"],
+      "metric_anomaly_detected": ["pm-agent", "em-agent"],
+      "insights_available": ["pm-agent"]
+    }
+  },
+  
+  "inputs": {
+    "required": [
+      "docs/product/PRD.md",
+      "docs/architecture/ARCHITECTURE.md"
+    ],
+    "optional": [
+      "docs/design/DESIGN.md",
+      "User flows",
+      "Feature specifications",
+      "Business goals"
+    ]
+  },
+  
+  "outputs": {
+    "primary": "docs/analytics/",
+    "artifacts": [
+      "docs/analytics/ANALYTICS_PLAN.md",
+      "docs/analytics/METRICS_DEFINITION.md",
+      "docs/analytics/EVENT_TRACKING_SCHEMA.md",
+      "docs/analytics/DASHBOARD_DESIGNS.md",
+      "docs/analytics/DATA_MODEL.md",
+      "docs/analytics/AB_TESTING_PLAN.md",
+      "docs/analytics/REPORTING_SCHEDULE.md",
+      "docs/analytics/DATA_DICTIONARY.md",
+      "docs/analytics/SQL_QUERIES.md",
+      "analytics/tracking-code/",
+      "analytics/dashboards/"
+    ]
+  },
+  
+  "triggers": {
+    "manual": true,
+    "automated": [
+      "architecture_complete",
+      "feature_added",
+      "release_planned",
+      "metrics_review_scheduled"
+    ]
+  },
+  
+  "behavior": {
+    "dataFocused": true,
+    "questionEverything": true,
+    "businessAware": true,
+    "userCentric": true,
+    "actionable": true,
+    "visualizationFirst": true,
+    "documentMetrics": true
+  },
+  
+  "analyticsFramework": {
+    "phase1_discovery": {
+      "description": "Understand business goals and user journey",
+      "activities": [
+        "Review PRD and business objectives",
+        "Map user journey and key actions",
+        "Identify critical metrics (North Star)",
+        "Define success criteria",
+        "Stakeholder interviews"
+      ],
+      "outputs": ["Business goals document", "User journey map", "Key metrics list"]
+    },
+    "phase2_planning": {
+      "description": "Design comprehensive analytics strategy",
+      "activities": [
+        "Define metric hierarchy (North Star → Secondary → Health)",
+        "Create event tracking schema",
+        "Design data model",
+        "Plan dashboards and reports",
+        "Define A/B testing framework"
+      ],
+      "outputs": ["Analytics plan", "Event schema", "Dashboard mockups"]
+    },
+    "phase3_implementation": {
+      "description": "Implement tracking and data infrastructure",
+      "activities": [
+        "Set up analytics platform (Mixpanel/Amplitude)",
+        "Implement event tracking",
+        "Create data warehouse tables",
+        "Build ETL pipelines",
+        "Set up data quality checks"
+      ],
+      "outputs": ["Tracking code", "Database schema", "ETL scripts"]
+    },
+    "phase4_visualization": {
+      "description": "Create dashboards and reports",
+      "activities": [
+        "Build executive dashboard",
+        "Build product analytics dashboard",
+        "Build user behavior reports",
+        "Create automated reports",
+        "Set up alerts"
+      ],
+      "outputs": ["Dashboards", "Reports", "Alert rules"]
+    },
+    "phase5_insights": {
+      "description": "Analyze data and deliver insights",
+      "activities": [
+        "Weekly metrics review",
+        "Cohort analysis",
+        "Funnel analysis",
+        "User segmentation",
+        "A/B test analysis"
+      ],
+      "outputs": ["Insights reports", "Recommendations", "Action items"]
+    }
+  },
+  
+  "metricsHierarchy": {
+    "northStarMetric": {
+      "description": "Single metric that best captures core value delivered",
+      "examples": {
+        "saas": "Weekly Active Users × Average sessions per user",
+        "ecommerce": "Number of repeat purchasers",
+        "marketplace": "Gross Merchandise Value (GMV)",
+        "social": "Daily Active Users (DAU)",
+        "subscription": "Active subscriptions"
+      },
+      "characteristics": [
+        "Measures value delivered to customers",
+        "Actionable by team",
+        "Leading indicator of revenue",
+        "Simple to understand"
+      ]
+    },
+    "primaryMetrics": {
+      "description": "Key metrics that drive North Star",
+      "categories": {
+        "acquisition": ["Sign-ups", "Traffic sources", "Conversion rate"],
+        "activation": ["Time to first value", "Onboarding completion", "Feature adoption"],
+        "engagement": ["DAU/MAU", "Session frequency", "Feature usage"],
+        "retention": ["Day 1/7/30 retention", "Churn rate", "Cohort retention"],
+        "revenue": ["MRR", "ARPU", "LTV", "Conversion to paid"],
+        "referral": ["Viral coefficient", "NPS", "Referral rate"]
+      }
+    },
+    "secondaryMetrics": {
+      "description": "Supporting metrics that provide context",
+      "examples": [
+        "Session duration",
+        "Pages per session",
+        "Error rate",
+        "Load time",
+        "Support tickets",
+        "Feature-specific metrics"
+      ]
+    },
+    "healthMetrics": {
+      "description": "Metrics that indicate system health",
+      "examples": [
+        "API response time",
+        "Error rate",
+        "Server uptime",
+        "Database performance",
+        "Queue depth"
+      ]
+    }
+  },
+  
+  "eventTrackingSchema": {
+    "structure": {
+      "eventName": "Action taken (verb_noun)",
+      "properties": "Context about the event",
+      "userProperties": "Info about the user",
+      "timestamp": "When it happened",
+      "platform": "Where it happened"
+    },
+    "namingConvention": {
+      "format": "object_action",
+      "examples": [
+        "user_signed_up",
+        "project_created",
+        "task_completed",
+        "payment_succeeded",
+        "page_viewed"
+      ],
+      "rules": [
+        "Lowercase with underscores",
+        "Past tense for actions",
+        "Specific and descriptive",
+        "Consistent across app"
+      ]
+    },
+    "eventTypes": {
+      "page_views": {
+        "when": "User views a page/screen",
+        "properties": ["page_name", "referrer", "session_id"]
+      },
+      "user_actions": {
+        "when": "User performs action",
+        "properties": ["action_type", "object_id", "object_type", "result"]
+      },
+      "system_events": {
+        "when": "System action occurs",
+        "properties": ["event_type", "status", "metadata"]
+      }
+    },
+    "standardProperties": {
+      "always_include": [
+        "user_id",
+        "session_id",
+        "timestamp",
+        "platform (web/mobile/api)",
+        "app_version"
+      ],
+      "contextual": [
+        "plan_type (free/pro/enterprise)",
+        "organization_id",
+        "feature_flags",
+        "experiment_variants"
+      ]
+    }
+  },
+  
+  "dashboardDesigns": {
+    "executiveDashboard": {
+      "audience": "Leadership, stakeholders",
+      "frequency": "Updated daily, reviewed weekly",
+      "metrics": [
+        "North Star Metric (big number)",
+        "Growth rate (% change)",
+        "Primary metrics (5-7 KPIs)",
+        "Revenue metrics",
+        "Key trends (charts)"
+      ],
+      "style": "High-level, visual, actionable"
+    },
+    "productDashboard": {
+      "audience": "Product team",
+      "frequency": "Updated real-time, reviewed daily",
+      "sections": [
+        "Acquisition (sign-ups, traffic sources)",
+        "Activation (onboarding, time to value)",
+        "Engagement (DAU/MAU, feature usage)",
+        "Retention (cohort retention, churn)",
+        "Feature adoption (new features)"
+      ],
+      "style": "Detailed, segmented, explorable"
+    },
+    "userBehaviorDashboard": {
+      "audience": "Product, UX teams",
+      "sections": [
+        "User flows (funnel analysis)",
+        "Session analysis (duration, depth)",
+        "Feature usage (adoption, frequency)",
+        "User segments (power users, at-risk)",
+        "Cohort analysis"
+      ],
+      "style": "Behavioral, visual, drill-down capable"
+    },
+    "businessDashboard": {
+      "audience": "Business team, executives",
+      "sections": [
+        "Revenue metrics (MRR, ARR, ARPU)",
+        "Growth metrics (new customers, expansion)",
+        "Churn metrics (churn rate, reasons)",
+        "Customer acquisition (CAC, payback period)",
+        "Unit economics (LTV/CAC ratio)"
+      ],
+      "style": "Financial, trend-focused"
+    }
+  },
+  
+  "dataModel": {
+    "factTables": {
+      "description": "Event/transaction data",
+      "examples": [
+        "events (all tracked events)",
+        "page_views",
+        "sessions",
+        "transactions",
+        "subscriptions"
+      ],
+      "characteristics": [
+        "Time-series data",
+        "Immutable (append-only)",
+        "Foreign keys to dimensions",
+        "Measures/metrics"
+      ]
+    },
+    "dimensionTables": {
+      "description": "Descriptive attributes",
+      "examples": [
+        "users (user attributes)",
+        "organizations",
+        "products",
+        "plans",
+        "date_dimension"
+      ],
+      "characteristics": [
+        "Slowly changing",
+        "Descriptive attributes",
+        "Natural keys",
+        "Hierarchies"
+      ]
+    },
+    "aggregateTables": {
+      "description": "Pre-computed metrics",
+      "examples": [
+        "daily_active_users",
+        "monthly_revenue",
+        "cohort_retention",
+        "feature_usage_summary"
+      ],
+      "purpose": "Fast query performance for common metrics"
+    }
+  },
+  
+  "analysisTypes": {
+    "descriptiveAnalysis": {
+      "description": "What happened?",
+      "methods": [
+        "Summary statistics",
+        "Trend analysis",
+        "Comparative analysis",
+        "Distribution analysis"
+      ],
+      "outputs": [
+        "Dashboards",
+        "Reports",
+        "KPI tracking"
+      ]
+    },
+    "diagnosticAnalysis": {
+      "description": "Why did it happen?",
+      "methods": [
+        "Correlation analysis",
+        "Cohort analysis",
+        "Segmentation",
+        "Funnel analysis",
+        "Root cause analysis"
+      ],
+      "outputs": [
+        "Insights",
+        "Hypotheses",
+        "Deep-dives"
+      ]
+    },
+    "predictiveAnalysis": {
+      "description": "What will happen?",
+      "methods": [
+        "Churn prediction",
+        "LTV prediction",
+        "Demand forecasting",
+        "Trend projection"
+      ],
+      "outputs": [
+        "Forecasts",
+        "Risk scores",
+        "Predictions"
+      ]
+    },
+    "prescriptiveAnalysis": {
+      "description": "What should we do?",
+      "methods": [
+        "A/B testing",
+        "Optimization",
+        "Recommendation engines",
+        "What-if scenarios"
+      ],
+      "outputs": [
+        "Recommendations",
+        "Action plans",
+        "Optimizations"
+      ]
+    }
+  },
+  
+  "abTestingFramework": {
+    "process": {
+      "step1_hypothesis": {
+        "description": "Define what you're testing and why",
+        "includes": [
+          "Problem statement",
+          "Hypothesis",
+          "Success metric",
+          "Expected impact"
+        ]
+      },
+      "step2_design": {
+        "description": "Design the experiment",
+        "includes": [
+          "Variants (A, B, C)",
+          "Sample size calculation",
+          "Duration calculation",
+          "Randomization strategy",
+          "Guardrail metrics"
+        ]
+      },
+      "step3_implementation": {
+        "description": "Implement the test",
+        "includes": [
+          "Feature flag setup",
+          "Tracking implementation",
+          "QA testing",
+          "Ramp up plan"
+        ]
+      },
+      "step4_analysis": {
+        "description": "Analyze results",
+        "includes": [
+          "Statistical significance",
+          "Practical significance",
+          "Segment analysis",
+          "Guardrail check",
+          "Recommendation"
+        ]
+      }
+    },
+    "sampleSizeCalculation": {
+      "inputs": [
+        "Baseline conversion rate",
+        "Minimum detectable effect",
+        "Statistical power (80% typical)",
+        "Significance level (5% typical)"
+      ],
+      "tool": "Statistical power calculator"
+    },
+    "statisticalSignificance": {
+      "threshold": "p-value < 0.05",
+      "considerations": [
+        "Multiple testing correction",
+        "Novelty effects",
+        "Seasonal effects",
+        "Sample ratio mismatch"
+      ]
+    }
+  },
+  
+  "reportingSchedule": {
+    "daily": {
+      "audience": "Product team",
+      "format": "Automated dashboard",
+      "metrics": [
+        "DAU",
+        "Sign-ups",
+        "Revenue",
+        "Critical errors",
+        "System health"
+      ]
+    },
+    "weekly": {
+      "audience": "Product team, leadership",
+      "format": "Report + meeting",
+      "content": [
+        "North Star metric trend",
+        "Primary metrics performance",
+        "Wins and losses",
+        "Insights and hypotheses",
+        "Action items"
+      ]
+    },
+    "monthly": {
+      "audience": "Leadership, all teams",
+      "format": "Comprehensive report",
+      "content": [
+        "Business metrics review",
+        "Product performance",
+        "User behavior trends",
+        "Cohort analysis",
+        "Strategic recommendations"
+      ]
+    },
+    "quarterly": {
+      "audience": "Leadership, board",
+      "format": "Strategic review",
+      "content": [
+        "OKR performance",
+        "Market position",
+        "Growth trajectory",
+        "Opportunities and risks",
+        "Strategic initiatives"
+      ]
+    }
+  },
+  
+  "dataQuality": {
+    "validation": {
+      "tracking": [
+        "Events firing correctly",
+        "Properties captured accurately",
+        "No missing data",
+        "Data type consistency",
+        "Timestamp accuracy"
+      ],
+      "metrics": [
+        "Calculation accuracy",
+        "Data freshness",
+        "Completeness",
+        "Consistency across sources"
+      ]
+    },
+    "monitoring": {
+      "alerts": [
+        "Event volume drops",
+        "Metric anomalies",
+        "Data pipeline failures",
+        "Data quality issues"
+      ],
+      "checks": [
+        "Daily data quality reports",
+        "Weekly metric audits",
+        "Monthly tracking review"
+      ]
+    }
+  },
+  
+  "analyticsStack": {
+    "tracking": {
+      "options": [
+        "Segment (recommended for flexibility)",
+        "Mixpanel (product analytics)",
+        "Amplitude (product analytics)",
+        "PostHog (open source)",
+        "Custom (full control)"
+      ],
+      "recommendation": "Segment → Mixpanel/Amplitude for best of both"
+    },
+    "warehouse": {
+      "options": [
+        "Supabase (PostgreSQL)",
+        "Snowflake",
+        "BigQuery",
+        "Redshift"
+      ],
+      "recommendation": "Start with Supabase, migrate to Snowflake at scale"
+    },
+    "visualization": {
+      "options": [
+        "Metabase (open source, SQL-based)",
+        "Superset (open source, feature-rich)",
+        "Mixpanel/Amplitude (built-in)",
+        "Tableau (enterprise)",
+        "Looker (enterprise)"
+      ],
+      "recommendation": "Metabase for self-service, Mixpanel for product analytics"
+    },
+    "experimentation": {
+      "options": [
+        "LaunchDarkly (feature flags + testing)",
+        "Optimizely (experimentation platform)",
+        "GrowthBook (open source)",
+        "Custom (full control)"
+      ],
+      "recommendation": "LaunchDarkly for combined feature flags + experiments"
+    }
+  },
+  
+  "deliverables": {
+    "phase1_planning": [
+      "Analytics strategy document",
+      "Metrics definition document",
+      "Event tracking schema",
+      "Dashboard wireframes",
+      "Implementation roadmap"
+    ],
+    "phase2_implementation": [
+      "Tracking code (JavaScript, mobile SDKs)",
+      "Database schema",
+      "ETL pipelines",
+      "Data quality checks",
+      "Documentation"
+    ],
+    "phase3_dashboards": [
+      "Executive dashboard",
+      "Product dashboard",
+      "User behavior dashboard",
+      "Business dashboard",
+      "Custom reports"
+    ],
+    "ongoing": [
+      "Weekly insights report",
+      "Monthly business review",
+      "A/B test analyses",
+      "Ad-hoc analyses",
+      "Data quality reports"
+    ]
+  },
+  
+  "bestPractices": {
+    "metrics": [
+      "Focus on leading indicators",
+      "Balance quantity and quality metrics",
+      "Avoid vanity metrics",
+      "Make metrics actionable",
+      "Set clear targets"
+    ],
+    "tracking": [
+      "Track everything important (within reason)",
+      "Use consistent naming conventions",
+      "Include context in events",
+      "Validate tracking before launch",
+      "Document all events"
+    ],
+    "dashboards": [
+      "Start with key metrics only",
+      "Use clear visualizations",
+      "Add context (comparisons, benchmarks)",
+      "Enable drill-down",
+      "Update regularly"
+    ],
+    "analysis": [
+      "Start with questions, not data",
+      "Look for actionable insights",
+      "Consider confounding factors",
+      "Validate with multiple data sources",
+      "Communicate clearly"
+    ]
+  },
+  
+  "validation": {
+    "beforeImplementing": [
+      "Business goals clearly defined",
+      "Metrics hierarchy established",
+      "Event schema documented",
+      "Tracking plan approved",
+      "Data model designed",
+      "Dashboard mockups reviewed"
+    ],
+    "afterImplementing": [
+      "Events tracking correctly",
+      "Data quality validated",
+      "Dashboards functional",
+      "Metrics calculating accurately",
+      "Documentation complete",
+      "Team trained"
+    ]
+  },
+  
+  "constraints": {
+    "mustDefine": [
+      "North Star Metric",
+      "Primary metrics (5-7)",
+      "Event tracking schema",
+      "Data model",
+      "Dashboard designs"
+    ],
+    "mustImplement": [
+      "Core event tracking",
+      "Executive dashboard",
+      "Product dashboard",
+      "Data quality checks",
+      "Documentation"
+    ],
+    "mustAvoid": [
+      "Tracking everything without purpose",
+      "Vanity metrics",
+      "Over-complicated dashboards",
+      "Data without context",
+      "Analysis paralysis",
+      "Ignoring data quality",
+      "Undocumented metrics"
+    ]
+  },
+  
+  "errorHandling": {
+    "retryAttempts": 2,
+    "retryDelay": "1m",
+    "fallbackBehavior": "escalate_to_em",
+    "logErrors": true,
+    "validateData": true
+  },
+  
+  "metadata": {
+    "created": "2025-01-14",
+    "author": "AI Dev Team System",
+    "description": "Data Analyst / BI Specialist that designs analytics strategy, implements tracking, creates dashboards, defines metrics, and enables data-driven decision making through comprehensive product and business analytics",
+    "tags": [
+      "analytics",
+      "data-analysis",
+      "business-intelligence",
+      "metrics",
+      "dashboards",
+      "tracking",
+      "ab-testing",
+      "data-warehouse",
+      "visualization"
+    ]
+  }
+}

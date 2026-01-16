@@ -1,0 +1,534 @@
+{
+  "id": "devops-agent",
+  "name": "DevOps Engineer",
+  "role": "Creates CI/CD pipelines, manages deployments, monitors production, ensures performance and scalability, conducts load testing",
+  "version": "2.0.0",
+  
+  "systemPrompt": {
+    "file": "agents/prompts/devops-agent.md",
+    "variables": {
+      "ci_platform": "GitHub Actions",
+      "deployment_targets": "Netlify, Supabase",
+      "monitoring_focus": "Performance, Availability, Scaling",
+      "load_testing": "Required for production readiness",
+      "project_type": "${PROJECT_TYPE}",
+      "specialization_context": "${file:agents/specializations/${PROJECT_TYPE}/devops-context.md}"
+    }
+  },
+  
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-sonnet-4-20250514",
+    "temperature": 0.3,
+    "maxTokens": 8000
+  },
+  
+  "tools": [
+    "filesystem",
+    "github",
+    "netlify",
+    "supabase"
+  ],
+  
+  "toolConfigs": {
+    "github": {
+      "token": "${GITHUB_TOKEN}",
+      "defaultRepo": "${GITHUB_REPO}",
+      "createWorkflows": true
+    },
+    "netlify": {
+      "token": "${NETLIFY_AUTH_TOKEN}",
+      "siteId": "${NETLIFY_SITE_ID}"
+    },
+    "supabase": {
+      "url": "${SUPABASE_URL}",
+      "serviceKey": "${SUPABASE_SERVICE_KEY}"
+    }
+  },
+  
+  "memory": {
+    "enabled": true,
+    "type": "persistent",
+    "scope": "project",
+    "maxItems": 100,
+    "rememberAcrossSessions": true,
+    "contextIncludes": [
+      "Deployment history",
+      "Pipeline configurations",
+      "Environment settings",
+      "Incidents"
+    ]
+  },
+  
+  "collaboration": {
+    "canReceiveFrom": ["infrastructure-agent", "qa-agent", "em-agent"],
+    "canSendTo": ["em-agent"],
+    "handoffPoints": [
+      "pipeline_ready",
+      "deployed",
+      "rollback_complete",
+      "incident_resolved"
+    ],
+    "notifyOn": {
+      "pipeline_created": ["em-agent"],
+      "deployment_successful": ["em-agent"],
+      "deployment_failed": ["em-agent"],
+      "incident_detected": ["em-agent"]
+    }
+  },
+  
+  "inputs": {
+    "required": [
+      "docs/infrastructure/SETUP.md"
+    ],
+    "optional": [
+      "docs/architecture/ARCHITECTURE.md",
+      "Deployment requirements",
+      "Monitoring requirements"
+    ]
+  },
+  
+  "outputs": {
+    "primary": ".github/workflows/",
+    "artifacts": [
+      ".github/workflows/test.yml",
+      ".github/workflows/deploy-staging.yml",
+      ".github/workflows/deploy-production.yml",
+      ".github/workflows/database-migrations.yml",
+      ".github/workflows/load-test.yml",
+      "docs/infrastructure/CI_CD.md",
+      "docs/infrastructure/DEPLOYMENT_GUIDE.md",
+      "docs/infrastructure/ROLLBACK_GUIDE.md",
+      "docs/infrastructure/MONITORING.md",
+      "docs/infrastructure/PERFORMANCE_TESTING.md",
+      "docs/infrastructure/LOAD_TESTING.md",
+      "docs/infrastructure/SCALING_STRATEGY.md",
+      "docs/infrastructure/PERFORMANCE_BUDGETS.md"
+    ]
+  },
+  
+  "triggers": {
+    "manual": true,
+    "automated": [
+      "infrastructure_ready",
+      "merge_to_main",
+      "merge_to_develop",
+      "deployment_requested",
+      "rollback_requested"
+    ]
+  },
+  
+  "behavior": {
+    "cautious": true,
+    "automatesEverything": true,
+    "monitorsProduction": true,
+    "documentsProcedures": true,
+    "preparesRollback": true,
+    "testsBeforeDeploying": true,
+    "optimizesPerformance": true,
+    "planForScale": true,
+    "conductLoadTesting": true
+  },
+  
+  "cicdPipelines": {
+    "test": {
+      "trigger": "Every push, every PR",
+      "steps": [
+        "Checkout code",
+        "Install dependencies",
+        "Run linters",
+        "Run type checks",
+        "Run unit tests",
+        "Run integration tests",
+        "Generate coverage report"
+      ],
+      "failOn": [
+        "Test failures",
+        "Linting errors",
+        "Type errors",
+        "Coverage below threshold"
+      ]
+    },
+    "deployStaging": {
+      "trigger": "Merge to develop branch",
+      "prerequisites": ["All tests pass"],
+      "steps": [
+        "Run full test suite",
+        "Build application",
+        "Run database migrations (staging)",
+        "Deploy to Netlify staging",
+        "Run smoke tests",
+        "Notify team"
+      ],
+      "rollbackOn": ["Smoke tests fail", "Critical errors"]
+    },
+    "deployProduction": {
+      "trigger": "Merge to main branch",
+      "prerequisites": [
+        "All tests pass",
+        "Staging deployment successful",
+        "Manual approval (optional)"
+      ],
+      "steps": [
+        "Run full test suite",
+        "Build application",
+        "Backup database",
+        "Run database migrations (production)",
+        "Deploy to Netlify production",
+        "Run smoke tests",
+        "Monitor for errors",
+        "Notify team"
+      ],
+      "rollbackOn": [
+        "Smoke tests fail",
+        "Error rate spike",
+        "Performance degradation"
+      ],
+      "monitoring": "30 minutes post-deploy"
+    },
+    "rollback": {
+      "trigger": "Manual or automatic",
+      "steps": [
+        "Stop current deployment",
+        "Revert to previous version",
+        "Rollback database if needed",
+        "Verify rollback successful",
+        "Notify team"
+      ],
+      "completion": "Under 5 minutes"
+    }
+  },
+  
+  "deploymentStrategy": {
+    "staging": {
+      "automatic": true,
+      "environment": "staging",
+      "testing": "Automated smoke tests",
+      "rollback": "Automatic on failure"
+    },
+    "production": {
+      "automatic": true,
+      "manualApproval": false,
+      "environment": "production",
+      "testing": "Comprehensive smoke tests",
+      "monitoring": "Active for 30 minutes",
+      "rollback": "Automatic on critical issues"
+    }
+  },
+  
+  "databaseMigrations": {
+    "approach": "Forward-only migrations",
+    "safety": {
+      "backup": "Always before migrations",
+      "testing": "Test in staging first",
+      "rollback": "Plan for rollback",
+      "dataLoss": "Never acceptable"
+    },
+    "workflow": [
+      "Create migration file",
+      "Test in development",
+      "Apply to staging",
+      "Verify staging works",
+      "Apply to production",
+      "Monitor for issues"
+    ]
+  },
+  
+  "monitoring": {
+    "metrics": [
+      "Error rate",
+      "Response time (p50, p95, p99)",
+      "Request volume",
+      "Database performance",
+      "Database connection pool usage",
+      "User count",
+      "Feature usage",
+      "CPU usage",
+      "Memory usage",
+      "Network throughput",
+      "Cache hit rate",
+      "Queue depth",
+      "Background job processing time"
+    ],
+    "alerts": {
+      "critical": {
+        "conditions": [
+          "Error rate > 5%",
+          "Response time p99 > 5s",
+          "Response time p95 > 3s",
+          "Database down",
+          "Auth broken",
+          "CPU > 90% for 5 minutes",
+          "Memory > 90%",
+          "Disk > 90%"
+        ],
+        "action": "Immediate notification + auto-rollback"
+      },
+      "warning": {
+        "conditions": [
+          "Error rate > 1%",
+          "Response time p95 > 2s",
+          "Response time p50 > 1s",
+          "Database slow",
+          "CPU > 80%",
+          "Memory > 80%",
+          "Cache miss rate > 50%"
+        ],
+        "action": "Notification to team"
+      }
+    },
+    "tools": {
+      "errors": "Sentry",
+      "performance": "Lighthouse CI + New Relic/DataDog",
+      "uptime": "UptimeRobot",
+      "analytics": "Supabase Dashboard",
+      "apm": "Application Performance Monitoring",
+      "logs": "Centralized logging (CloudWatch, Datadog)"
+    }
+  },
+
+  "performanceTesting": {
+    "types": {
+      "smokeTest": {
+        "description": "Verify system works under minimal load",
+        "users": 1,
+        "duration": "2 minutes",
+        "when": "After every deployment"
+      },
+      "loadTest": {
+        "description": "Test system under expected load",
+        "users": "Expected concurrent users",
+        "duration": "15-30 minutes",
+        "when": "Before major releases"
+      },
+      "stressTest": {
+        "description": "Test system beyond capacity",
+        "users": "2-3x expected load",
+        "duration": "Until failure or 1 hour",
+        "when": "Before major releases"
+      },
+      "spikeTest": {
+        "description": "Test sudden traffic spikes",
+        "pattern": "Sudden increase then normal",
+        "when": "Before marketing campaigns"
+      },
+      "soakTest": {
+        "description": "Test long-running stability",
+        "duration": "24-72 hours",
+        "when": "Major architecture changes"
+      }
+    },
+    "tools": {
+      "preferred": "k6 (modern, scriptable)",
+      "alternatives": ["Artillery", "Locust", "JMeter"],
+      "infrastructure": "Separate from production"
+    },
+    "scenarios": [
+      "Homepage load",
+      "User authentication",
+      "Search functionality",
+      "Create/read/update operations",
+      "Complex queries",
+      "File uploads",
+      "API endpoints",
+      "Checkout flow (e-commerce)",
+      "Report generation"
+    ],
+    "metrics": {
+      "responseTime": {
+        "excellent": "< 100ms",
+        "good": "< 500ms",
+        "acceptable": "< 1s",
+        "poor": "> 1s"
+      },
+      "throughput": "Requests per second",
+      "errorRate": {
+        "excellent": "< 0.1%",
+        "acceptable": "< 1%",
+        "poor": "> 1%"
+      },
+      "concurrentUsers": "Maximum without degradation"
+    }
+  },
+
+  "scalingStrategy": {
+    "horizontal": {
+      "description": "Add more instances",
+      "when": "CPU/Memory consistently > 70%",
+      "how": "Auto-scaling groups, container orchestration",
+      "limits": "Database connections, shared state"
+    },
+    "vertical": {
+      "description": "Bigger instances",
+      "when": "Single-threaded bottlenecks",
+      "how": "Upgrade server size",
+      "limits": "Cost, maximum instance size"
+    },
+    "database": {
+      "readReplicas": "For read-heavy workloads",
+      "connectionPooling": "Prevent connection exhaustion",
+      "caching": "Redis for hot data",
+      "indexing": "Optimize slow queries",
+      "partitioning": "For very large tables"
+    },
+    "cdn": {
+      "staticAssets": "Images, CSS, JS via CDN",
+      "edgeCaching": "Cache API responses at edge",
+      "imageOptimization": "Automatic format conversion"
+    },
+    "caching": {
+      "browser": "Cache-Control headers",
+      "cdn": "CDN edge caching",
+      "application": "Redis/Memcached",
+      "database": "Query result caching"
+    }
+  },
+
+  "performanceBudgets": {
+    "pageLoadTime": {
+      "homepage": "< 2s",
+      "internalPages": "< 3s",
+      "searchResults": "< 1.5s"
+    },
+    "api": {
+      "simple": "< 100ms",
+      "complex": "< 500ms",
+      "reports": "< 5s"
+    },
+    "bundleSize": {
+      "javascript": "< 300KB gzipped",
+      "css": "< 50KB gzipped",
+      "totalPage": "< 1MB"
+    },
+    "lighthouse": {
+      "performance": "> 90",
+      "accessibility": "> 95",
+      "bestPractices": "> 90",
+      "seo": "> 95"
+    }
+  },
+  
+  "securityPractices": {
+    "secrets": {
+      "storage": "GitHub Secrets",
+      "rotation": "Every 90 days",
+      "access": "Principle of least privilege"
+    },
+    "dependencies": {
+      "scanning": "Dependabot",
+      "updates": "Weekly",
+      "security": "Auto-merge security patches"
+    },
+    "ssl": {
+      "enforcement": "Always HTTPS",
+      "certificates": "Managed by Netlify"
+    }
+  },
+  
+  "environmentManagement": {
+    "environments": {
+      "development": {
+        "purpose": "Local development",
+        "database": "Local or dev Supabase",
+        "deployment": "Local"
+      },
+      "staging": {
+        "purpose": "Testing and QA",
+        "database": "Staging Supabase",
+        "deployment": "Netlify staging",
+        "url": "app-staging.netlify.app"
+      },
+      "production": {
+        "purpose": "Live application",
+        "database": "Production Supabase",
+        "deployment": "Netlify production",
+        "url": "app.netlify.app or custom domain"
+      }
+    },
+    "variables": {
+      "management": "Environment-specific",
+      "security": "Encrypted in GitHub",
+      "validation": "Check before deployment"
+    }
+  },
+  
+  "incidentResponse": {
+    "detection": {
+      "methods": ["Monitoring alerts", "User reports", "Automated checks"],
+      "responseTime": "Within 5 minutes"
+    },
+    "triage": {
+      "severity": "Assess impact and urgency",
+      "classification": "Bug, outage, or degradation"
+    },
+    "resolution": {
+      "immediate": "Rollback if possible",
+      "shortTerm": "Hotfix if needed",
+      "longTerm": "Root cause analysis"
+    },
+    "postMortem": {
+      "required": "For all incidents",
+      "includes": [
+        "What happened",
+        "Why it happened",
+        "How we fixed it",
+        "How we prevent it"
+      ]
+    }
+  },
+  
+  "validation": {
+    "beforeDeploying": [
+      "All tests pass",
+      "No security vulnerabilities",
+      "Database migrations tested",
+      "Rollback plan ready",
+      "Monitoring configured",
+      "Performance budgets met",
+      "Load testing completed (for production)",
+      "Scaling strategy documented",
+      "Performance baselines established"
+    ]
+  },
+  
+  "constraints": {
+    "mustImplement": [
+      "Automated testing",
+      "Automated deployment",
+      "Database backups",
+      "Monitoring",
+      "Rollback capability",
+      "Environment separation",
+      "Performance monitoring",
+      "Load testing (before production)",
+      "Performance budgets",
+      "Scaling strategy",
+      "Auto-scaling rules"
+    ],
+    "neverDo": [
+      "Deploy without tests",
+      "Deploy without backup",
+      "Deploy without rollback plan",
+      "Skip staging environment",
+      "Ignore monitoring alerts",
+      "Deploy without load testing (production)",
+      "Ignore performance degradation",
+      "Scale without testing limits"
+    ]
+  },
+  
+  "errorHandling": {
+    "retryAttempts": 3,
+    "retryDelay": "2m",
+    "fallbackBehavior": "notify_em_and_rollback",
+    "logErrors": true
+  },
+  
+  "metadata": {
+    "created": "2025-01-14",
+    "updated": "2025-01-14",
+    "author": "AI Dev Team System",
+    "description": "DevOps Engineer that creates CI/CD pipelines, automates deployments, manages infrastructure, monitors production with automatic rollback capabilities, conducts performance and load testing, implements scaling strategies, and ensures system performance meets defined budgets",
+    "tags": ["devops", "cicd", "deployment", "monitoring", "github-actions", "automation", "performance", "load-testing", "scaling"]
+  }
+}

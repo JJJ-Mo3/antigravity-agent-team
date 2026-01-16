@@ -1,0 +1,180 @@
+{
+    "id": "saas-dba-agent",
+    "name": "SaaS Database Administrator",
+    "role": "Designs comprehensive database schema with strict multi-tenant Row Level Security policies for SaaS products",
+    "version": "1.0.0",
+    "systemPrompt": {
+        "file": "agents/prompts/dba-agent.md",
+        "variables": {
+            "database_platform": "PostgreSQL (Supabase)",
+            "security_focus": "Multi-tenant Row Level Security",
+            "project_type": "saas",
+            "specialization_context": "${file:agents/specializations/saas/dba-context.md}"
+        }
+    },
+    "model": {
+        "provider": "anthropic",
+        "name": "claude-sonnet-4-20250514",
+        "temperature": 0.3,
+        "maxTokens": 8000
+    },
+    "tools": [
+        "filesystem",
+        "github",
+        "supabase"
+    ],
+    "toolConfigs": {
+        "github": {
+            "token": "${GITHUB_TOKEN}",
+            "defaultRepo": "${GITHUB_REPO}"
+        },
+        "supabase": {
+            "url": "${SUPABASE_URL}",
+            "serviceKey": "${SUPABASE_SERVICE_KEY}"
+        }
+    },
+    "memory": {
+        "enabled": true,
+        "type": "persistent",
+        "scope": "project",
+        "maxItems": 100,
+        "rememberAcrossSessions": true
+    },
+    "collaboration": {
+        "canReceiveFrom": [
+            "saas-pm-agent",
+            "saas-architect-agent"
+        ],
+        "canSendTo": [
+            "designer-agent",
+            "infrastructure-agent",
+            "developer-agent"
+        ],
+        "handoffPoints": [
+            "schema_complete",
+            "migration_ready"
+        ],
+        "notifyOn": {
+            "schema_complete": [
+                "designer-agent",
+                "infrastructure-agent"
+            ],
+            "schema_updated": [
+                "developer-agent"
+            ]
+        }
+    },
+    "inputs": {
+        "required": [
+            "docs/product/PRD.md",
+            "docs/architecture/ARCHITECTURE.md"
+        ],
+        "optional": [
+            "Data models",
+            "Query patterns",
+            "Performance requirements"
+        ]
+    },
+    "outputs": {
+        "primary": "docs/database/SCHEMA.md",
+        "artifacts": [
+            "docs/database/RLS_POLICIES.md",
+            "docs/database/INDEXES.md",
+            "docs/database/TRIGGERS.md",
+            "docs/database/migrations/001_initial_schema.sql",
+            "docs/database/migrations/002_rls_policies.sql",
+            "docs/database/migrations/003_indexes.sql"
+        ]
+    },
+    "triggers": {
+        "manual": true,
+        "automated": [
+            "prd_complete",
+            "architecture_complete",
+            "schema_review_requested",
+            "data_model_changed"
+        ]
+    },
+    "behavior": {
+        "interactive": false,
+        "iterative": true,
+        "requiresApproval": true,
+        "autonomous": true,
+        "validatesSQLBeforeCreating": true,
+        "testsRLSPolicies": true
+    },
+    "validation": {
+        "outputFormat": "markdown + SQL",
+        "requiredSections": [
+            "Schema Overview",
+            "Tables",
+            "Relationships",
+            "Indexes",
+            "Row Level Security",
+            "Triggers & Functions",
+            "Migration Strategy"
+        ],
+        "sqlValidation": true,
+        "rlsValidation": true
+    },
+    "databasePrinciples": {
+        "normalization": "3NF minimum",
+        "namingConvention": "snake_case",
+        "mustHave": [
+            "organization_id on all multi-tenant tables",
+            "created_at timestamp",
+            "updated_at timestamp",
+            "Primary keys on all tables",
+            "Foreign keys for relationships",
+            "Appropriate indexes"
+        ],
+        "security": [
+            "RLS enabled on all tables",
+            "Policies for SELECT, INSERT, UPDATE, DELETE",
+            "Strict tenant isolation (WHERE organization_id = ...)",
+            "No direct access without auth",
+            "Service role for admin operations"
+        ],
+        "performance": [
+            "Index foreign keys",
+            "Index organization_id columns",
+            "Index frequently queried columns",
+            "Consider JSONB indexes where needed"
+        ]
+    },
+    "constraints": {
+        "platform": "Supabase PostgreSQL 15+",
+        "mustUse": [
+            "Row Level Security",
+            "organization_id column for tenancy",
+            "Proper foreign key constraints",
+            "NOT NULL where appropriate"
+        ],
+        "shouldAvoid": [
+            "Cross-tenant data access",
+            "Tables without organization_id (except global ref)",
+            "Tables without RLS policies"
+        ]
+    },
+    "errorHandling": {
+        "retryAttempts": 2,
+        "retryDelay": "30s",
+        "fallbackBehavior": "request_clarification",
+        "logErrors": true,
+        "validateSQL": true
+    },
+    "metadata": {
+        "created": "2025-01-14",
+        "author": "AI Dev Team System",
+        "description": "Database Administrator specialized in PostgreSQL schema design for SaaS, enforcing strict multi-tenant isolation via RLS policies",
+        "tags": [
+            "database",
+            "postgresql",
+            "supabase",
+            "rls",
+            "schema-design",
+            "saas",
+            "multi-tenancy"
+        ]
+    }
+}

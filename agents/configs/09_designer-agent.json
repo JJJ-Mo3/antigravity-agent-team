@@ -1,0 +1,202 @@
+{
+  "id": "designer-agent",
+  "name": "UX/UI Designer",
+  "role": "Creates comprehensive design specifications, user flows, wireframes, and component library",
+  "version": "1.0.0",
+  
+  "systemPrompt": {
+    "file": "agents/prompts/designer-agent.md",
+    "variables": {
+      "design_system": "Tailwind CSS",
+      "ui_framework": "${UI_FRAMEWORK}",
+      "project_type": "${PROJECT_TYPE}",
+      "specialization_context": "${file:agents/specializations/${PROJECT_TYPE}/designer-context.md}"
+    }
+  },
+  
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-sonnet-4-20250514",
+    "temperature": 0.8,
+    "maxTokens": 8000
+  },
+  
+  "tools": [
+    "filesystem",
+    "github",
+    "web_search"
+  ],
+  
+  "toolConfigs": {
+    "github": {
+      "token": "${GITHUB_TOKEN}",
+      "defaultRepo": "${GITHUB_REPO}"
+    }
+  },
+  
+  "memory": {
+    "enabled": true,
+    "type": "persistent",
+    "scope": "project",
+    "maxItems": 100,
+    "rememberAcrossSessions": true
+  },
+  
+  "collaboration": {
+    "canReceiveFrom": ["architect-agent", "dba-agent"],
+    "canSendTo": ["infrastructure-agent", "em-agent", "developer-agent"],
+    "handoffPoints": ["design_complete", "component_library_ready"],
+    "notifyOn": {
+      "design_complete": ["infrastructure-agent", "em-agent"],
+      "design_updated": ["developer-agent"]
+    }
+  },
+  
+  "inputs": {
+    "required": [
+      "docs/product/PRD.md",
+      "docs/architecture/ARCHITECTURE.md",
+      "docs/database/SCHEMA.md"
+    ],
+    "optional": [
+      "Brand guidelines",
+      "Design inspiration",
+      "Accessibility requirements"
+    ]
+  },
+  
+  "outputs": {
+    "primary": "docs/design/DESIGN.md",
+    "artifacts": [
+      "docs/design/COMPONENTS.md",
+      "docs/design/USER_FLOWS.md",
+      "docs/design/WIREFRAMES.md",
+      "docs/design/DESIGN_SYSTEM.md",
+      "docs/design/RESPONSIVE_BREAKPOINTS.md",
+      "docs/design/COLOR_PALETTE.md",
+      "docs/design/TYPOGRAPHY.md"
+    ]
+  },
+  
+  "triggers": {
+    "manual": true,
+    "automated": [
+      "architecture_complete",
+      "schema_complete",
+      "design_review_requested",
+      "feature_added"
+    ]
+  },
+  
+  "behavior": {
+    "interactive": false,
+    "iterative": true,
+    "requiresApproval": true,
+    "autonomous": true,
+    "researchesBestPractices": true,
+    "considersAccessibility": true
+  },
+  
+  "validation": {
+    "outputFormat": "markdown",
+    "requiredSections": [
+      "Design Philosophy",
+      "Color Palette",
+      "Typography",
+      "Component Library",
+      "User Flows",
+      "Wireframes",
+      "Responsive Design",
+      "Accessibility",
+      "Design Tokens"
+    ],
+    "accessibilityStandards": "WCAG 2.1 AA",
+    "responsiveBreakpoints": ["mobile", "tablet", "desktop"]
+  },
+  
+  "designPrinciples": {
+    "approach": "Mobile-first",
+    "framework": "Tailwind CSS",
+    "accessibility": "WCAG 2.1 AA minimum",
+    "responsiveness": "Required for all components",
+    "consistency": "Design tokens for all values",
+    "performance": "Optimize images and assets",
+    "usability": [
+      "Clear visual hierarchy",
+      "Intuitive navigation",
+      "Consistent patterns",
+      "Helpful feedback",
+      "Error prevention"
+    ]
+  },
+  
+  "componentSpecifications": {
+    "mustInclude": [
+      "States (default, hover, active, disabled, error)",
+      "Variants (primary, secondary, etc.)",
+      "Sizes (sm, md, lg)",
+      "Props and API",
+      "Usage examples",
+      "Accessibility notes"
+    ],
+    "minimumComponents": [
+      "Button",
+      "Input",
+      "Select",
+      "Checkbox",
+      "Radio",
+      "Modal",
+      "Card",
+      "Table",
+      "Form",
+      "Navigation"
+    ]
+  },
+  
+  "userFlows": {
+    "format": "Step-by-step with decision points",
+    "includeFor": "All major features",
+    "mustShow": [
+      "Happy path",
+      "Error states",
+      "Loading states",
+      "Empty states",
+      "Success confirmations"
+    ]
+  },
+  
+  "wireframes": {
+    "fidelity": "Medium to High",
+    "format": "ASCII art + detailed descriptions",
+    "includeFor": [
+      "All unique pages",
+      "Key user interactions",
+      "Complex layouts"
+    ],
+    "annotations": "Required for interactive elements"
+  },
+  
+  "constraints": {
+    "mustUse": ["Tailwind CSS", "Responsive design", "Semantic HTML"],
+    "shouldAvoid": [
+      "Custom CSS without reason",
+      "Inconsistent spacing",
+      "Inaccessible components",
+      "Non-semantic markup"
+    ]
+  },
+  
+  "errorHandling": {
+    "retryAttempts": 2,
+    "retryDelay": "1m",
+    "fallbackBehavior": "request_clarification",
+    "logErrors": true
+  },
+  
+  "metadata": {
+    "created": "2025-01-14",
+    "author": "AI Dev Team System",
+    "description": "UX/UI Designer that creates comprehensive design systems, user flows, wireframes, and component specifications with focus on accessibility and responsive design",
+    "tags": ["design", "ux", "ui", "tailwind", "accessibility", "responsive", "components"]
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "id": "pm-agent",
+  "name": "Product Manager",
+  "role": "Gathers requirements and creates comprehensive Product Requirements Document (PRD)",
+  "version": "1.0.0",
+  
+  "systemPrompt": {
+    "file": "agents/prompts/pm-agent.md",
+    "variables": {
+      "project_type": "${PROJECT_TYPE}",
+      "specialization_context": "${file:agents/specializations/${PROJECT_TYPE}/pm-context.md}"
+    }
+  },
+  
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-sonnet-4-20250514",
+    "temperature": 0.7,
+    "maxTokens": 8000
+  },
+  
+  "tools": [
+    "filesystem",
+    "github",
+    "web_search"
+  ],
+  
+  "toolConfigs": {
+    "github": {
+      "token": "${GITHUB_TOKEN}",
+      "defaultRepo": "${GITHUB_REPO}"
+    }
+  },
+  
+  "memory": {
+    "enabled": true,
+    "type": "persistent",
+    "scope": "project",
+    "maxItems": 100,
+    "rememberAcrossSessions": true
+  },
+  
+  "collaboration": {
+    "canReceiveFrom": ["user"],
+    "canSendTo": ["architect-agent", "dba-agent"],
+    "handoffPoints": ["prd_complete"],
+    "notifyOn": {
+      "prd_complete": ["architect-agent", "dba-agent"]
+    }
+  },
+  
+  "inputs": {
+    "required": [],
+    "optional": [
+      "Product idea description",
+      "Market research",
+      "Competitor analysis"
+    ]
+  },
+  
+  "outputs": {
+    "primary": "docs/product/PRD.md",
+    "artifacts": [
+      "docs/product/USER_PERSONAS.md",
+      "docs/product/COMPETITIVE_ANALYSIS.md",
+      "docs/product/METRICS.md"
+    ]
+  },
+  
+  "triggers": {
+    "manual": true,
+    "automated": ["project_initialized", "prd_update_requested"]
+  },
+  
+  "behavior": {
+    "interactive": true,
+    "iterative": true,
+    "requiresApproval": true,
+    "conversational": true,
+    "asksClarifyingQuestions": true
+  },
+  
+  "validation": {
+    "outputFormat": "markdown",
+    "requiredSections": [
+      "Executive Summary",
+      "Problem Statement",
+      "User Personas",
+      "Features",
+      "Success Metrics",
+      "Technical Requirements"
+    ],
+    "minimumDetailLevel": "comprehensive"
+  },
+  
+  "errorHandling": {
+    "retryAttempts": 3,
+    "retryDelay": "30s",
+    "fallbackBehavior": "notify_user",
+    "logErrors": true
+  },
+  
+  "metadata": {
+    "created": "2025-01-14",
+    "author": "AI Dev Team System",
+    "description": "Product Manager agent that conducts interactive requirements gathering and creates comprehensive PRDs optimized for software development",
+    "tags": ["product-management", "requirements", "prd", "planning"]
+  }
+}
