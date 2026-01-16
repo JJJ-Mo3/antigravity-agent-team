@@ -1,6 +1,6 @@
 import os
 
-output_file = "install.sh"
+output_file = "setup-ai-team.sh"
 cwd = os.getcwd()
 
 header = """#!/bin/bash
@@ -19,7 +19,7 @@ mkdir -p agents/specializations/mobile
 mkdir -p agents/specializations/chrome-extension
 mkdir -p agents/specializations/ai-app
 mkdir -p agents/specializations/ecommerce
-mkdir -p .agent/workflows
+mkdir -p workflows
 mkdir -p docs/product docs/architecture docs/database docs/design docs/implementation docs/infrastructure docs/security docs/analytics docs/documentation
 
 echo "📂 Directories created."
@@ -60,7 +60,7 @@ base_dirs = [
     "agents/specializations/chrome-extension",
     "agents/specializations/ai-app",
     "agents/specializations/ecommerce",
-    ".agent/workflows"
+    "workflows"
 ]
 
 for directory in base_dirs:

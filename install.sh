@@ -14,7 +14,7 @@ mkdir -p agents/specializations/mobile
 mkdir -p agents/specializations/chrome-extension
 mkdir -p agents/specializations/ai-app
 mkdir -p agents/specializations/ecommerce
-mkdir -p .agent/workflows
+mkdir -p workflows
 mkdir -p docs/product docs/architecture docs/database docs/design docs/implementation docs/infrastructure docs/security docs/analytics docs/documentation
 
 echo "📂 Directories created."
@@ -6047,12 +6047,12 @@ For existing products, define **Feature Specifications** that integrate with the
 
 ## Workflow
 
-1. **Engage in Conversation** - Interactive discussion
-2. **Ask 2-3 Questions Per Response** - Don't overwhelm
-3. **Build Understanding** - Each exchange deepens knowledge
-4. **When Human Says "done"** - Create complete PRD
-5. **Save to** `docs/product/PRD.md` (or `docs/product/features/FEATURE_NAME.md` for discrete features)
-6. **Notify Completion** - Let human know PRD is ready
+1. **Engage in Discussion** - Ask questions to understand the vision.
+2. **Iterate** - Build understanding through 2-3 questions per turn.
+3. **Pre-Generation Confirmation** - ask: *"Do you have any other details to share, or shall I draft the PRD now?"*
+4. **Draft PRD** - When confirmed, generate the full PRD and save to `docs/product/PRD.md`.
+5. **Post-Generation Review** - Present the PRD and ask: *"Does this look correct? Do you want any changes before we proceed?"*
+6. **Finalize** - Only when approved, notify readiness for the next stage.
 
 ## Communication Style
 
@@ -7472,11 +7472,11 @@ Save to `docs/architecture/ARCHITECTURE.md`
 
 ## Workflow
 
-1. Read PRD thoroughly
-2. Design architecture for Supabase + Netlify
-3. Make technology choices with rationale
-4. Save to `docs/architecture/ARCHITECTURE.md` (Update if exists)
-5. Notify completion
+1. **Analyze & Ask** - Read the PRD. Ask the user clarifying questions about technical preferences or constraints.
+2. **Pre-Generation Confirmation** - Confirm with the user: *"I have a plan. Ready for me to generate the Architecture?"*
+3. **Draft Architecture** - Design the system and save to `docs/architecture/ARCHITECTURE.md`.
+4. **Post-Generation Review** - Present the document and ask: *"Please review the architecture. Do you approve this design?"*
+5. **Finalize** - Only when approved, notify readiness for the next stage.
 
 ## Communication Style
 
@@ -14864,8 +14864,8 @@ Content:
 This context ensures your e-commerce site PRD covers all the unique requirements for online retail success.
 EOF
 
-echo 'Writing .agent/workflows/run-devops.md...'
-cat <<'EOF' > .agent/workflows/run-devops.md
+echo 'Writing workflows/run-devops.md...'
+cat <<'EOF' > workflows/run-devops.md
 ---
 description: Run the DevOps Engineer agent for CI/CD and deployment
 ---
@@ -14995,8 +14995,8 @@ After DevOps setup is complete, tell the user:
 Begin by reviewing the architecture and infrastructure docs, then create the CI/CD pipelines.
 EOF
 
-echo 'Writing .agent/workflows/run-saas-architect.md...'
-cat <<'EOF' > .agent/workflows/run-saas-architect.md
+echo 'Writing workflows/run-saas-architect.md...'
+cat <<'EOF' > workflows/run-saas-architect.md
 ---
 description: Run the SaaS Technical Architect agent for system design
 ---
@@ -15041,8 +15041,8 @@ You are now acting as the **SaaS Technical Architect Agent**. Your role is to de
 Begin by reading the PRD and designing the architecture.
 EOF
 
-echo 'Writing .agent/workflows/bug-fix.md...'
-cat <<'EOF' > .agent/workflows/bug-fix.md
+echo 'Writing workflows/bug-fix.md...'
+cat <<'EOF' > workflows/bug-fix.md
 ---
 description: Fix a reported bug in the codebase
 ---
@@ -15084,8 +15084,8 @@ This workflow streamlines the process of reproducing, fixing, and verifying bugs
 Then say: "Fix bug in [feature]: [details]"
 EOF
 
-echo 'Writing .agent/workflows/run-security.md...'
-cat <<'EOF' > .agent/workflows/run-security.md
+echo 'Writing workflows/run-security.md...'
+cat <<'EOF' > workflows/run-security.md
 ---
 description: Run the Security Engineer agent for audits and testing
 ---
@@ -15117,8 +15117,8 @@ The Security Engineer operates in three modes: **Audit**, **Review**, and **PenT
     *   **Output**: `SECURITY_AUDIT.md`, `VULNERABILITY_REPORT.md`
 EOF
 
-echo 'Writing .agent/workflows/run-tech-writer.md...'
-cat <<'EOF' > .agent/workflows/run-tech-writer.md
+echo 'Writing workflows/run-tech-writer.md...'
+cat <<'EOF' > workflows/run-tech-writer.md
 ---
 description: Run the Technical Writer agent to generate documentation
 ---
@@ -15140,8 +15140,8 @@ The Technical Writer creates and maintains all project documentation.
 4.  **Maintenance**: Scans docs for broken links or outdated info.
 EOF
 
-echo 'Writing .agent/workflows/run-dba.md...'
-cat <<'EOF' > .agent/workflows/run-dba.md
+echo 'Writing workflows/run-dba.md...'
+cat <<'EOF' > workflows/run-dba.md
 ---
 description: Run the Database Administrator agent for schema design with Row Level Security
 ---
@@ -15240,8 +15240,8 @@ After schema is complete, tell the user:
 Begin by reading `docs/product/PRD.md` and designing the database schema.
 EOF
 
-echo 'Writing .agent/workflows/run-saas-pm.md...'
-cat <<'EOF' > .agent/workflows/run-saas-pm.md
+echo 'Writing workflows/run-saas-pm.md...'
+cat <<'EOF' > workflows/run-saas-pm.md
 ---
 description: Run the SaaS Product Manager agent for specialized requirements gathering
 ---
@@ -15294,8 +15294,8 @@ You are now acting as the **SaaS Product Manager Agent**. Your role is to create
 Begin by greeting the user and asking about their SaaS idea.
 EOF
 
-echo 'Writing .agent/workflows/start-mobile-project.md...'
-cat <<'EOF' > .agent/workflows/start-mobile-project.md
+echo 'Writing workflows/start-mobile-project.md...'
+cat <<'EOF' > workflows/start-mobile-project.md
 ---
 description: Start a new Mobile App project (React Native/Expo)
 ---
@@ -15321,8 +15321,8 @@ This workflow initializes the AI Team with **Mobile Development specialization**
     Follow the standard steps in `/start-project`, but Agents will use mobile-specific stacks (React Native, Expo, SQLite/WatermelonDB).
 EOF
 
-echo 'Writing .agent/workflows/feature-request.md...'
-cat <<'EOF' > .agent/workflows/feature-request.md
+echo 'Writing workflows/feature-request.md...'
+cat <<'EOF' > workflows/feature-request.md
 ---
 description: Request a new feature implementation on an existing codebase
 ---
@@ -15395,8 +15395,8 @@ This workflow guides the team through adding a new feature to an existing applic
 Then say: "I want to add a new feature: [Description]"
 EOF
 
-echo 'Writing .agent/workflows/start-ai-app-project.md...'
-cat <<'EOF' > .agent/workflows/start-ai-app-project.md
+echo 'Writing workflows/start-ai-app-project.md...'
+cat <<'EOF' > workflows/start-ai-app-project.md
 ---
 description: Start a new AI Application project (RAG, LLMs, Agents)
 ---
@@ -15422,8 +15422,8 @@ This workflow initializes the AI Team with **AI Application specialization**.
     Follow `/start-project`. Agents will design for vector databases (pgvector), LangChain/LangGraph integration, and streaming responses.
 EOF
 
-echo 'Writing .agent/workflows/run-em.md...'
-cat <<'EOF' > .agent/workflows/run-em.md
+echo 'Writing workflows/run-em.md...'
+cat <<'EOF' > workflows/run-em.md
 ---
 description: Run the Engineering Manager agent for implementation planning
 ---
@@ -15547,8 +15547,8 @@ After plan is complete, tell the user:
 Begin by reading all documentation and creating the implementation plan.
 EOF
 
-echo 'Writing .agent/workflows/run-pm.md...'
-cat <<'EOF' > .agent/workflows/run-pm.md
+echo 'Writing workflows/run-pm.md...'
+cat <<'EOF' > workflows/run-pm.md
 ---
 description: Run the Product Manager agent for requirements gathering and PRD creation
 ---
@@ -15621,8 +15621,8 @@ After PRD is complete, tell the user:
 Begin by greeting the user and asking them to describe their product idea.
 EOF
 
-echo 'Writing .agent/workflows/run-developer.md...'
-cat <<'EOF' > .agent/workflows/run-developer.md
+echo 'Writing workflows/run-developer.md...'
+cat <<'EOF' > workflows/run-developer.md
 ---
 description: Run the Developer agent for implementing code slices
 ---
@@ -15747,8 +15747,8 @@ After implementation is complete, tell the user:
 Ask the user which slice to implement, then read the specification and create a plan.
 EOF
 
-echo 'Writing .agent/workflows/refactor.md...'
-cat <<'EOF' > .agent/workflows/refactor.md
+echo 'Writing workflows/refactor.md...'
+cat <<'EOF' > workflows/refactor.md
 ---
 description: Refactor existing code for performance, readability, or technical debt
 ---
@@ -15802,8 +15802,8 @@ This workflow focuses on improving existing code without changing external behav
 Then say: "I want to refactor [file/component] to..."
 EOF
 
-echo 'Writing .agent/workflows/start-saas-project.md...'
-cat <<'EOF' > .agent/workflows/start-saas-project.md
+echo 'Writing workflows/start-saas-project.md...'
+cat <<'EOF' > workflows/start-saas-project.md
 ---
 description: Start a new SaaS project (Multi-tenant, Subscriptions)
 ---
@@ -15829,8 +15829,8 @@ This workflow initializes the AI Team with **SaaS specialization**.
     Follow `/start-project`. Agents will enforce RLS for tenancy and designing for scale.
 EOF
 
-echo 'Writing .agent/workflows/run-data-analyst.md...'
-cat <<'EOF' > .agent/workflows/run-data-analyst.md
+echo 'Writing workflows/run-data-analyst.md...'
+cat <<'EOF' > workflows/run-data-analyst.md
 ---
 description: Run the Data Analyst agent for metrics and dashboards
 ---
@@ -15851,8 +15851,8 @@ The Data Analyst ensures the product is measurable and provides insights.
 3.  **Reporting**: Designs dashboards and generates insight reports from data.
 EOF
 
-echo 'Writing .agent/workflows/start-project.md...'
-cat <<'EOF' > .agent/workflows/start-project.md
+echo 'Writing workflows/start-project.md...'
+cat <<'EOF' > workflows/start-project.md
 ---
 description: Start a new project with the full 12-Agent AI development team
 ---
@@ -15963,8 +15963,8 @@ To begin, run:
 ```
 EOF
 
-echo 'Writing .agent/workflows/run-shopify-pm.md...'
-cat <<'EOF' > .agent/workflows/run-shopify-pm.md
+echo 'Writing workflows/run-shopify-pm.md...'
+cat <<'EOF' > workflows/run-shopify-pm.md
 ---
 description: Run the Shopify Product Manager agent for app requirements
 ---
@@ -16009,8 +16009,8 @@ You are now acting as the **Shopify Product Manager Agent**. Your role is to cre
 Begin by asking about the Shopify App concept.
 EOF
 
-echo 'Writing .agent/workflows/run-architect.md...'
-cat <<'EOF' > .agent/workflows/run-architect.md
+echo 'Writing workflows/run-architect.md...'
+cat <<'EOF' > workflows/run-architect.md
 ---
 description: Run the Technical Architect agent for system design
 ---
@@ -16110,8 +16110,8 @@ After architecture is complete, tell the user:
 Begin by reading `docs/product/PRD.md` and then designing the architecture.
 EOF
 
-echo 'Writing .agent/workflows/start-chrome-extension-project.md...'
-cat <<'EOF' > .agent/workflows/start-chrome-extension-project.md
+echo 'Writing workflows/start-chrome-extension-project.md...'
+cat <<'EOF' > workflows/start-chrome-extension-project.md
 ---
 description: Start a new Chrome Extension project
 ---
@@ -16137,8 +16137,8 @@ This workflow initializes the AI Team with **Chrome Extension specialization**.
     Follow `/start-project`. Agents will manage `manifest.json` versions and browser distinct architectures.
 EOF
 
-echo 'Writing .agent/workflows/run-designer.md...'
-cat <<'EOF' > .agent/workflows/run-designer.md
+echo 'Writing workflows/run-designer.md...'
+cat <<'EOF' > workflows/run-designer.md
 ---
 description: Run the UX/UI Designer agent for design specifications and user flows
 ---
@@ -16249,8 +16249,8 @@ After design is complete, tell the user:
 Begin by reading all prerequisite documents and designing the user experience.
 EOF
 
-echo 'Writing .agent/workflows/run-saas-dba.md...'
-cat <<'EOF' > .agent/workflows/run-saas-dba.md
+echo 'Writing workflows/run-saas-dba.md...'
+cat <<'EOF' > workflows/run-saas-dba.md
 ---
 description: Run the SaaS Database Administrator agent for schema design
 ---
@@ -16297,8 +16297,8 @@ You are now acting as the **SaaS Database Administrator Agent**. Your role is to
 Begin by designing the multi-tenant schema.
 EOF
 
-echo 'Writing .agent/workflows/start-shopify-project.md...'
-cat <<'EOF' > .agent/workflows/start-shopify-project.md
+echo 'Writing workflows/start-shopify-project.md...'
+cat <<'EOF' > workflows/start-shopify-project.md
 ---
 description: Start a new Shopify App project
 ---
@@ -16356,8 +16356,8 @@ To begin:
 ```
 EOF
 
-echo 'Writing .agent/workflows/run-infrastructure.md...'
-cat <<'EOF' > .agent/workflows/run-infrastructure.md
+echo 'Writing workflows/run-infrastructure.md...'
+cat <<'EOF' > workflows/run-infrastructure.md
 ---
 description: Run the Infrastructure Engineer agent for Supabase and Netlify setup
 ---
@@ -16500,8 +16500,8 @@ After infrastructure guide is complete, tell the user:
 Begin by reviewing the architecture and schema documents, then create the infrastructure setup guides.
 EOF
 
-echo 'Writing .agent/workflows/run-qa.md...'
-cat <<'EOF' > .agent/workflows/run-qa.md
+echo 'Writing workflows/run-qa.md...'
+cat <<'EOF' > workflows/run-qa.md
 ---
 description: Run the QA Engineer agent for comprehensive testing
 ---
@@ -16652,8 +16652,8 @@ After testing is complete, tell the user:
 Ask the user which slice/PR to test, then create a test plan and begin testing.
 EOF
 
-echo 'Writing .agent/workflows/start-ecommerce-project.md...'
-cat <<'EOF' > .agent/workflows/start-ecommerce-project.md
+echo 'Writing workflows/start-ecommerce-project.md...'
+cat <<'EOF' > workflows/start-ecommerce-project.md
 ---
 description: Start a new E-commerce project (Scale, Cart, Checkout)
 ---
@@ -16679,4 +16679,4 @@ This workflow initializes the AI Team with **E-commerce specialization**.
     Follow `/start-project`. The Data Analyst agent will heavily prioritize conversion funnels and GMV metrics.
 EOF
 
-echo "✅ AI Team successfully installed! Check AI_TEAM_README.md for usage."
+echo "✅ AI Team successfully installed! Check README.md for usage."
