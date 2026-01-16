@@ -1,6 +1,6 @@
 # AI Development Team 🤖
 
-This repository contains the configuration for a complete, semi-autonomous AI software development team using agents in Google Antigravity. This team consists of **12 specialized agents** and strict workflows to build high-quality software from idea to production.
+This repository contains the configuration for a complete, semi-autonomous AI software development team using agents in Google Antigravity. This team consists of **12 specialized agents** and strict workflows to build high-quality software from idea to production in a PRD-Driven and iterative approach.
 
 Note that the architecture pieces (Github, Netlify, Supabase, etc.) may need adjustment or additions for your infrastructure.
 
