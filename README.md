@@ -1,4 +1,4 @@
-# AI Development Team 🤖 (v2.0)
+# AI Development Team 🤖
 
 This repository contains the configuration for a complete, autonomous AI software development team. This team consists of **12 specialized agents** and strict workflows to build high-quality software from idea to production.
 
